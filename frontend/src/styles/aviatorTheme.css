@@ -1,0 +1,629 @@
+.aviator-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: var(--u-text);
+}
+
+.aviator-header {
+  background: linear-gradient(135deg, var(--u-blue) 0%, var(--u-blue-dark) 100%);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.aviator-back-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aviator-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.aviator-balance-badge {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.aviator-body {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.aviator-spectator-banner {
+  background: #eef2ff;
+  border: 1px solid #dbe4ff;
+  color: var(--u-blue-dark);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.aviator-canvas {
+  background: radial-gradient(circle at 32% 62%, rgba(120, 155, 255, 0.55) 0%, transparent 55%),
+    repeating-conic-gradient(
+      from 0deg at 32% 62%,
+      rgba(255, 255, 255, 0.05) 0deg 4deg,
+      transparent 4deg 10deg
+    ),
+    linear-gradient(180deg, #16257a 0%, #0a1550 100%);
+  border-radius: var(--u-card-radius);
+  min-height: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(16, 30, 110, 0.3);
+}
+
+.aviator-canvas-burst {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 32% 62%, rgba(255, 255, 255, 0.12) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.aviator-status {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 2;
+}
+
+.aviator-status.betting {
+  color: #ffc670;
+}
+
+.aviator-status.running {
+  color: #7bf0a3;
+}
+
+.aviator-status.crashed {
+  color: #ff8f87;
+}
+
+.aviator-plane {
+  position: absolute;
+  bottom: 26%;
+  left: 12%;
+  width: 130px;
+  height: 39px;
+  transition: transform 0.15s linear;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  z-index: 2;
+}
+
+.aviator-plane-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.aviator-plane-body {
+  fill: #ffffff;
+  stroke: var(--u-blue-dark);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.aviator-plane-trail {
+  stroke: var(--u-blue);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.aviator-plane.running .aviator-plane-trail,
+.aviator-plane.crashed .aviator-plane-trail {
+  opacity: 1;
+}
+
+.aviator-plane.crashed .aviator-plane-trail {
+  stroke: var(--u-error);
+}
+
+.aviator-plane.crashed .aviator-plane-body {
+  fill: #ffe5e3;
+  stroke: var(--u-error);
+}
+
+.aviator-plane.running {
+  animation: aviator-fly 1.2s ease-in-out infinite alternate;
+}
+
+.aviator-plane.crashed {
+  animation: none;
+  filter: drop-shadow(0 4px 10px rgba(255, 107, 107, 0.6));
+}
+
+@keyframes aviator-fly {
+  from {
+    transform: translate(0, 0) rotate(-8deg);
+  }
+  to {
+    transform: translate(18px, -14px) rotate(-8deg);
+  }
+}
+
+.aviator-multiplier {
+  font-size: 56px;
+  font-weight: 800;
+  font-family: 'Courier New', monospace;
+  color: #fff;
+  text-shadow: 0 0 24px rgba(120, 155, 255, 0.8);
+  z-index: 2;
+}
+
+.aviator-multiplier.crashed {
+  color: #ff8f87;
+  text-shadow: 0 0 24px rgba(255, 107, 107, 0.6);
+}
+
+.aviator-watchers {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  padding: 5px 12px 5px 6px;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+.aviator-watchers-avatars {
+  display: flex;
+}
+
+.aviator-watchers-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #223a99;
+  border: 1.5px solid #7bf0a3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  margin-left: -8px;
+}
+
+.aviator-watchers-avatar:first-child {
+  margin-left: 0;
+}
+
+.aviator-watchers-count {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.aviator-countdown {
+  font-size: 13px;
+  color: var(--u-muted);
+  margin-top: 6px;
+}
+
+.aviator-history {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.aviator-history-pill {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--u-muted);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.aviator-history-pill.high {
+  color: var(--u-success);
+  background: #e8f8ee;
+}
+
+.aviator-history-pill.low {
+  color: var(--u-error);
+  background: #fdecea;
+}
+
+.aviator-betting-card {
+  background: #fff;
+  border-radius: var(--u-card-radius);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.aviator-bet-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--u-muted);
+  margin-bottom: 6px;
+}
+
+.aviator-bet-input {
+  width: 100%;
+  padding: 12px;
+  background: var(--u-bg);
+  border: 1.5px solid #e4e6ee;
+  border-radius: 10px;
+  color: var(--u-text);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.aviator-bet-input:focus {
+  outline: none;
+  border-color: var(--u-blue);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(61, 107, 255, 0.12);
+}
+
+.aviator-quick-bet {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.aviator-quick-bet-btn {
+  flex: 1;
+  padding: 8px;
+  background: var(--u-bg);
+  border: 1px solid #e4e6ee;
+  border-radius: 8px;
+  color: var(--u-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.aviator-quick-bet-btn:hover {
+  border-color: var(--u-blue);
+  color: var(--u-blue);
+}
+
+.aviator-action-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.aviator-action-btn.bet {
+  background: linear-gradient(135deg, #6c93ff 0%, var(--u-blue) 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(61, 107, 255, 0.3);
+}
+
+.aviator-action-btn.cashout {
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.aviator-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aviator-bet-status {
+  text-align: center;
+  font-size: 13px;
+  color: var(--u-muted);
+  margin-top: 10px;
+}
+
+.aviator-bet-status.win {
+  color: var(--u-success);
+  font-weight: 700;
+}
+
+.aviator-bet-status.lose {
+  color: var(--u-error);
+  font-weight: 700;
+}
+
+.aviator-error {
+  background: #fff0f0;
+  border-left: 3px solid var(--u-error);
+  color: #c0392b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Live bets feed */
+.aviator-feed-card {
+  background: #fff;
+  border-radius: var(--u-card-radius);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.aviator-feed-tabs {
+  display: flex;
+  background: var(--u-bg);
+  border-radius: 20px;
+  padding: 4px;
+  margin-bottom: 14px;
+}
+
+.aviator-feed-tab {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--u-muted);
+  cursor: pointer;
+}
+
+.aviator-feed-tab.active {
+  background: #fff;
+  color: var(--u-blue);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.aviator-feed-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.aviator-feed-summary-progress {
+  flex: 1;
+}
+
+.aviator-feed-progress-track {
+  height: 5px;
+  background: var(--u-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.aviator-feed-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6c93ff 0%, var(--u-blue) 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.aviator-feed-summary-label {
+  font-size: 11px;
+  color: var(--u-muted);
+  font-weight: 600;
+}
+
+.aviator-feed-summary-total {
+  text-align: right;
+}
+
+.aviator-feed-summary-total-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--u-gold);
+}
+
+.aviator-feed-round-result {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.aviator-feed-round-result-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #d6398a;
+  font-family: 'Courier New', monospace;
+}
+
+/* Top tab: sort toggle + win cards */
+.aviator-feed-sort-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.aviator-feed-sort-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1.5px solid #e4e6ee;
+  background: var(--u-bg);
+  color: var(--u-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.aviator-feed-sort-btn.active {
+  background: var(--u-blue);
+  border-color: var(--u-blue);
+  color: #fff;
+}
+
+.aviator-feed-card-list {
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.aviator-feed-win-card {
+  background: var(--u-bg);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.aviator-feed-win-card.you {
+  border: 1.5px solid var(--u-blue);
+  background: #eef2ff;
+}
+
+.aviator-feed-win-card-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--u-text);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.aviator-feed-win-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--u-muted);
+  margin-top: 4px;
+}
+
+.aviator-feed-win-card-row strong {
+  color: var(--u-text);
+  font-weight: 800;
+}
+
+.aviator-feed-pink {
+  color: #d6398a !important;
+}
+
+.aviator-feed-header-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 0.8fr 1fr;
+  gap: 8px;
+  padding: 0 10px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--u-muted);
+}
+
+.aviator-feed-list {
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aviator-feed-empty {
+  text-align: center;
+  color: var(--u-muted);
+  font-size: 12px;
+  padding: 20px 0;
+}
+
+.aviator-feed-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 0.8fr 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: var(--u-bg);
+  font-size: 12px;
+}
+
+.aviator-feed-row.win {
+  background: #e8f8ee;
+}
+
+.aviator-feed-row.you {
+  border: 1.5px solid var(--u-blue);
+}
+
+.aviator-feed-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--u-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aviator-feed-avatar {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.aviator-feed-bet {
+  color: var(--u-text);
+  font-weight: 600;
+}
+
+.aviator-feed-x {
+  color: var(--u-blue);
+  font-weight: 700;
+}
+
+.aviator-feed-row.win .aviator-feed-x {
+  color: #7c3aed;
+}
+
+.aviator-feed-win {
+  color: var(--u-muted);
+  font-weight: 700;
+}
+
+.aviator-feed-row.win .aviator-feed-win {
+  color: var(--u-success);
+}

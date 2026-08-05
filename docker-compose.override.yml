@@ -1,0 +1,16 @@
+# Automatically merged on top of docker-compose.yml by `docker compose up` —
+# no extra flags needed. Adds bind mounts + dev entrypoints so editing
+# backend/frontend source is picked up live, with no image rebuild required.
+# A rebuild is only needed when package.json / package-lock.json changes.
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
