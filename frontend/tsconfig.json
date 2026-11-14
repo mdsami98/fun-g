@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+
+    /* Vite transpiles; it never type-checks. tsc is for the editor and
+       for `npm run typecheck`, so it must not emit. */
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* The codebase is .jsx today. allowJs keeps those files resolvable
+       from TS without forcing a whole-project migration; checkJs stays
+       off so existing files are not retroactively type-errored. */
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["src"]
+}

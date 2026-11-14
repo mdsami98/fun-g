@@ -11,6 +11,15 @@ const TOP_SORTS = [
   { key: 'win', label: 'Win' },
 ];
 
+/* Flat initial avatar (no emoji): first letter of the masked handle. */
+function Avatar({ handle }) {
+  return (
+    <span className="aviator-feed-avatar" aria-hidden="true">
+      {handle.charAt(0).toUpperCase()}
+    </span>
+  );
+}
+
 export function LiveBetsFeed({ allBets, previousBets, previousCrashPoint, topBets, stats }) {
   const [activeTab, setActiveTab] = useState('all');
   const [topSort, setTopSort] = useState('win');
@@ -33,6 +42,7 @@ export function LiveBetsFeed({ allBets, previousBets, previousCrashPoint, topBet
             key={tab.key}
             type="button"
             className={`aviator-feed-tab${activeTab === tab.key ? ' active' : ''}`}
+            aria-pressed={activeTab === tab.key}
             onClick={() => setActiveTab(tab.key)}
           >
             {tab.label}
@@ -54,6 +64,7 @@ export function LiveBetsFeed({ allBets, previousBets, previousCrashPoint, topBet
               key={sort.key}
               type="button"
               className={`aviator-feed-sort-btn${topSort === sort.key ? ' active' : ''}`}
+              aria-pressed={topSort === sort.key}
               onClick={() => setTopSort(sort.key)}
             >
               {sort.label}
@@ -85,7 +96,7 @@ export function LiveBetsFeed({ allBets, previousBets, previousCrashPoint, topBet
             rows.map((bet) => (
               <div key={bet.id} className={`aviator-feed-win-card${bet.isYou ? ' you' : ''}`}>
                 <div className="aviator-feed-win-card-player">
-                  <span className="aviator-feed-avatar">{bet.avatar}</span>
+                  <Avatar handle={bet.handle} />
                   {bet.handle}
                 </div>
                 <div className="aviator-feed-win-card-row">
@@ -127,7 +138,7 @@ export function LiveBetsFeed({ allBets, previousBets, previousCrashPoint, topBet
                   className={`aviator-feed-row${bet.cashOutMultiplier !== null ? ' win' : ''}${bet.isYou ? ' you' : ''}`}
                 >
                   <span className="aviator-feed-player">
-                    <span className="aviator-feed-avatar">{bet.avatar}</span>
+                    <Avatar handle={bet.handle} />
                     {bet.handle}
                   </span>
                   <span className="aviator-feed-bet">৳{bet.amount}</span>

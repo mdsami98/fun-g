@@ -15,12 +15,14 @@ import { AgencyLogin } from './pages/agency/AgencyLogin';
 import { AgencyLayout } from './pages/agency/AgencyLayout';
 import { AgencyDashboard } from './pages/agency/AgencyDashboard';
 import { AgencyProfile } from './pages/agency/AgencyProfile';
+import { CrashChartPreview } from './pages/dev/CrashChartPreview';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/crash-chart" element={<CrashChartPreview />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<UserLayout />}>
@@ -37,18 +39,19 @@ function App() {
               path="wallet"
               element={
                 <ProtectedRoute roles={['user']}>
-                  <PlaceholderPage title="Wallet" icon="👛" />
+                  <PlaceholderPage title="Wallet" icon="wallet" />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="settings"
+              path="account"
               element={
                 <ProtectedRoute roles={['user']}>
                   <Settings />
                 </ProtectedRoute>
               }
             />
+            <Route path="settings" element={<Navigate to="/account" replace />} />
           </Route>
 
           <Route path="/aviator" element={<AviatorGame />} />

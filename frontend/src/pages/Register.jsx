@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../api/client';
+import { FormAlert, FormField } from '../components/FormField';
+import { Icon } from '../components/Icon';
+import { firstInvalid, PASSWORD_MIN, validateRegister } from '../lib/validation';
 import '../styles/userTheme.css';
+
+/* Visual order = focus order for "first invalid field". */
+const FIELDS = ['name', 'phone', 'agencyCode', 'password', 'confirmPassword'];
 
 export function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const [values, setValues] = useState({
     name: '',
     phone: '',
     agencyCode: '',
@@ -15,43 +21,52 @@ export function Register() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
+  const [touched, setTouched] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const refs = {
+    name: useRef(null),
+    phone: useRef(null),
+    agencyCode: useRef(null),
+    password: useRef(null),
+    confirmPassword: useRef(null),
+  };
 
-  const update = (field) => (event) =>
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+  const errors = validateRegister(values);
+  const errorFor = (field) => (touched[field] || submitted ? errors[field] : undefined);
+
+  const bind = (field) => ({
+    value: values[field],
+    onChange: (e) => setValues((prev) => ({ ...prev, [field]: e.target.value })),
+    onBlur: () => setTouched((prev) => ({ ...prev, [field]: true })),
+    inputRef: refs[field],
+    error: errorFor(field),
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError('');
+    setSubmitted(true);
+    setServerError('');
 
-    if (!form.name || !form.phone || !form.agencyCode || !form.password) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
+    const invalid = firstInvalid(errors, FIELDS);
+    if (invalid) {
+      refs[invalid].current?.focus();
       return;
     }
 
     setIsSubmitting(true);
     try {
       await register({
-        name: form.name,
-        phone: form.phone,
-        agencyCode: form.agencyCode.toUpperCase(),
-        password: form.password,
-        ...(form.referralCode ? { referralCode: form.referralCode.toUpperCase() } : {}),
+        name: values.name.trim(),
+        phone: values.phone.trim(),
+        agencyCode: values.agencyCode.trim().toUpperCase(),
+        password: values.password,
+        ...(values.referralCode.trim() ? { referralCode: values.referralCode.trim().toUpperCase() } : {}),
       });
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong');
+      setServerError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -60,120 +75,85 @@ export function Register() {
   return (
     <div className="user-shell">
       <div className="user-shell-inner">
-        <div className="u-auth-page">
+        <main className="u-auth-page">
           <div className="u-auth-card">
             <div className="u-auth-header">
-              <div className="u-auth-logo">🎮 AVIATOR</div>
-              <div className="u-auth-subtitle">Create Your Account</div>
+              <h1 className="u-auth-logo">
+                <Icon name="game-controller" weight="fill" size={30} />
+                AVIATOR
+              </h1>
+              <div className="u-auth-subtitle">Create your account</div>
             </div>
 
             <div className="u-auth-content">
-              {error && <div className="u-auth-error">{error}</div>}
+              <FormAlert>{serverError}</FormAlert>
 
-              <form onSubmit={handleSubmit}>
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="name">
-                    👤 Full Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    className="u-input"
-                    placeholder="Your name"
-                    value={form.name}
-                    onChange={update('name')}
-                    required
-                  />
-                </div>
-
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="phone">
-                    📱 Phone Number
-                  </label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    className="u-input"
-                    placeholder="+88017XXXXXXXX"
-                    value={form.phone}
-                    onChange={update('phone')}
-                    required
-                  />
-                  <div className="u-input-hint">Format: +88017XXXXXXXX or 017XXXXXXXX</div>
-                </div>
-
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="agencyCode">
-                    🏢 Agency Code
-                  </label>
-                  <input
-                    id="agencyCode"
-                    type="text"
-                    className="u-input"
-                    placeholder="Enter agency code"
-                    value={form.agencyCode}
-                    onChange={update('agencyCode')}
-                    required
-                  />
-                  <div className="u-input-hint">Ask your agency for the unique code</div>
-                </div>
-
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="referralCode">
-                    💎 Referral Code <span className="u-label-optional">(Optional)</span>
-                  </label>
-                  <input
-                    id="referralCode"
-                    type="text"
-                    className="u-input"
-                    placeholder="Referral code (if you have one)"
-                    value={form.referralCode}
-                    onChange={update('referralCode')}
-                  />
-                </div>
-
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="password">
-                    🔐 Create Password
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    className="u-input"
-                    placeholder="Min. 8 characters"
-                    value={form.password}
-                    onChange={update('password')}
-                    minLength={8}
-                    required
-                  />
-                </div>
-
-                <div className="u-form-group">
-                  <label className="u-label" htmlFor="confirmPassword">
-                    🔐 Confirm Password
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    className="u-input"
-                    placeholder="Repeat password"
-                    value={form.confirmPassword}
-                    onChange={update('confirmPassword')}
-                    required
-                  />
-                </div>
+              <form onSubmit={handleSubmit} noValidate>
+                <FormField
+                  id="name"
+                  label="Full name"
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  placeholder="Your name"
+                  {...bind('name')}
+                />
+                <FormField
+                  id="phone"
+                  label="Phone number"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="+8801712345678"
+                  hint="10–15 digits, optionally starting with +"
+                  {...bind('phone')}
+                />
+                <FormField
+                  id="agencyCode"
+                  label="Agency code"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  placeholder="e.g. SUN-01"
+                  hint="Ask your agency for this code"
+                  {...bind('agencyCode')}
+                />
+                <FormField
+                  id="referralCode"
+                  label="Referral code"
+                  optional
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  placeholder="If you have one"
+                  value={values.referralCode}
+                  onChange={(e) => setValues((prev) => ({ ...prev, referralCode: e.target.value }))}
+                />
+                <FormField
+                  id="password"
+                  label="Create password"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder={`At least ${PASSWORD_MIN} characters`}
+                  {...bind('password')}
+                />
+                <FormField
+                  id="confirmPassword"
+                  label="Confirm password"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Repeat your password"
+                  {...bind('confirmPassword')}
+                />
 
                 <button type="submit" className="u-auth-btn-primary" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating account…' : 'Create Account'}
+                  {isSubmitting ? 'Creating account…' : 'Create account'}
                 </button>
               </form>
 
               <div className="u-auth-switch">
-                Already have an account? <Link to="/login">Login</Link>
+                Already have an account? <Link to="/login">Log in</Link>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
