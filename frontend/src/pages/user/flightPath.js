@@ -16,21 +16,20 @@
        p(t) = 1 - e^(-k·t)      t = multiplier - 1,  p → 1 but never 1
    X saturates fast so the arrow parks at ~8/10 across; Y keeps
    climbing on a slower curve. */
-const X_MAX = 82;
-const Y_MAX = 76;
-const KX = 1.15;
-const KY = 0.42;
+const X_MAX = 86;
+const Y_MAX = 70;
+const KX = 0.95;
+const KY = 0.48;
 
 /* Bézier control point placement, as a fraction of the span from the
-   origin to the tip. Low CTRL_Y keeps the tail flat near the origin
-   then sweeps up — the shape in the reference. */
-const CTRL_X = 0.62;
-const CTRL_Y = 0.16;
+   origin to the tip. Sweeps smoothly up like the screenshot. */
+const CTRL_X = 0.58;
+const CTRL_Y = 0.10;
 
-/* Ribbon half-width in px: thin at the origin, thick at the tip. */
-const HALF_W_START = 0.7;
-const HALF_W_END = 5.5;
-const TAPER_EXP = 1.25;
+/* Ribbon width: slightly more pronounced like the crisp red border line */
+const HALF_W_START = 1.0;
+const HALF_W_END = 3.5;
+const TAPER_EXP = 1.1;
 
 /* Arrowhead, in px, measured from the curve's end point along the
    tangent. The end point sits on the arrow's BACK EDGE, not at its
@@ -197,11 +196,17 @@ export function buildFlightPath(multiplier, w, h) {
   for (let i = bottom.length - 1; i >= 0; i -= 1) {
     ribbonD += ` L ${fmt(bottom[i].x)} ${fmt(bottom[i].y)}`;
   }
-  ribbonD += ' Z';
+  // Single continuous top edge line of the curve for crisp rendering
+  let curveD = `M ${fmt(origin.x)} ${fmt(origin.y)}`;
+  for (let i = 0; i <= SAMPLES; i += 1) {
+    const t = i / SAMPLES;
+    const pt = quadAt(origin, control, tip, t);
+    curveD += ` L ${fmt(pt.x)} ${fmt(pt.y)}`;
+  }
 
   // Translucent area between the curve and the floor. It starts at the
-  // canvas's own bottom-left CORNER, not at the inset origin — otherwise
-  // the fill's left edge sits 18px in and reads as a visible step.
+  // canvas's bottom-left corner (0, h), follows the bottom floor, sweeps up
+  // along the curve to tip, and drops vertically straight down to the floor at (tip.x, h).
   const areaD =
     `M 0 ${fmt(h)}` +
     ` L ${fmt(origin.x)} ${fmt(origin.y)}` +
@@ -228,7 +233,7 @@ export function buildFlightPath(multiplier, w, h) {
 
   const angle = (Math.atan2(-dir.y, dir.x) * 180) / Math.PI;
 
-  return { ribbonD, areaD, arrowD, tip, angle };
+  return { ribbonD, curveD, areaD, arrowD, tip, angle };
 }
 
 export const FLIGHT_LIMITS = { X_MAX, Y_MAX, ARROW_LEN, ARROW_WING };

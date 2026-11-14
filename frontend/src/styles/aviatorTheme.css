@@ -123,31 +123,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 280px;
+  min-height: 320px;
   overflow: hidden;
   border-radius: var(--r);
-  border: var(--border-hairline);
-  background: rgb(var(--shadow-rgb));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #09080d;
 }
 
-/* Ray layer: a square much larger than the canvas, CENTRED on the
-   canvas's bottom-left corner, so it still covers the stage at any
-   rotation. One full ray period is 12deg — rotating by exactly that
-   loops seamlessly. Hard stops = stripes, not a blend. */
+/* Ray layer: Dark background rays bursting from bottom-left exactly like reference */
 .aviator-canvas-burst {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 260%;
+  width: 320%;
   aspect-ratio: 1;
   transform: translate(-50%, 50%);
   background: repeating-conic-gradient(
     from 0deg at 50% 50%,
-    rgb(var(--light-rgb) / 0.05) 0deg 6deg,
-    transparent 6deg 12deg
+    rgba(255, 255, 255, 0.045) 0deg 4.5deg,
+    rgba(0, 0, 0, 0.12) 4.5deg 9deg
   );
   pointer-events: none;
-  animation: aviator-rays 3.2s linear infinite;
+  animation: aviator-rays 6s linear infinite;
   animation-play-state: paused;
 }
 
@@ -157,7 +154,7 @@
 
 @keyframes aviator-rays {
   to {
-    transform: translate(-50%, 50%) rotate(12deg);
+    transform: translate(-50%, 50%) rotate(9deg);
   }
 }
 
@@ -192,12 +189,10 @@
 }
 
 /* ═══ FLIGHT PATH ═══
-   One SVG sized to the canvas in real pixels — area fill, line and the
-   plane all live in it and share a coordinate space, which is what keeps
-   the plane attached to the end of the trail. Flat: one solid colour,
-   set once in --path-color; crash remaps it. */
+   Area fill, curved trajectory, and user's custom red plane.
+   The area fill uses a rich crimson gradient matching the reference screenshot. */
 .aviator-path {
-  --path-color: var(--brand);
+  --path-color: #e5133a;
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -207,41 +202,43 @@
 }
 
 .aviator-path.crashed {
-  --path-color: var(--danger);
+  --path-color: #991026;
 }
 
-/* While bets are open the stage belongs to the start screen; the plane
-   appears at the origin the moment the round takes off. */
+/* While bets are open the stage belongs to the start screen */
 .aviator-path.betting {
   opacity: 0;
 }
 
-/* The trail only exists mid-round. */
+/* The trail only exists mid-round while flying */
 .aviator-path-area,
+.aviator-path-stroke,
 .aviator-path-ribbon {
   opacity: 0;
-  transition: opacity var(--dur) var(--ease-out);
+  transition: opacity 0.2s var(--ease-out);
 }
 
-.aviator-path-area {
-  fill: var(--path-color);
-  fill-opacity: 0.22;
+.aviator-path-stroke {
+  stroke: #ff1c47;
 }
 
-.aviator-path-ribbon {
-  fill: var(--path-color);
-}
-
+/* While running (flying), the trail is visible */
 .aviator-path.running .aviator-path-area,
-.aviator-path.running .aviator-path-ribbon,
-.aviator-path.crashed .aviator-path-area,
-.aviator-path.crashed .aviator-path-ribbon {
+.aviator-path.running .aviator-path-stroke,
+.aviator-path.running .aviator-path-ribbon {
   opacity: 1;
 }
 
-/* ═══ PLANE — flat two-tone ═══ */
-.aviator-plane-hull {
-  fill: var(--brand);
+/* After plane crash, the red line and area are immediately gone */
+.aviator-path.crashed .aviator-path-area,
+.aviator-path.crashed .aviator-path-stroke,
+.aviator-path.crashed .aviator-path-ribbon {
+  opacity: 0;
+}
+
+/* ═══ PLANE ═══ */
+.aviator-plane-img {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
 }
 
 .aviator-plane-dark {
@@ -341,56 +338,83 @@
   }
 }
 
-.aviator-start-lockup {
+/* ═══ UFC & AVIATOR OFFICIAL PARTNERS ═══ */
+.aviator-partner-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.partner-brands-row {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 3cqw, 14px);
+  gap: 16px;
 }
 
-.aviator-start-mark {
-  width: clamp(54px, 20cqw, 84px);
-  height: auto;
-  overflow: visible;
-}
-
-.aviator-start-divider {
-  width: 2px;
-  align-self: stretch;
-  margin: var(--space-1) 0;
-  background: var(--border-strong);
-}
-
-/* Russo One ships one upright weight — never synthesise bold/italic */
-.aviator-start-title {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 10cqw, 40px);
-  font-weight: 400;
+.ufc-logo {
+  font-family: -apple-system, BlinkMacSystemFont, 'Impact', 'Arial Black', sans-serif;
+  font-size: clamp(38px, 9cqw, 54px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  color: #d21a2d;
   line-height: 1;
-  letter-spacing: 0.03em;
-  color: var(--brand);
 }
 
-.aviator-start-sub {
-  font-size: clamp(12px, 3.6cqw, 14px);
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  color: var(--t2);
+.partner-divider-vert {
+  width: 1px;
+  height: clamp(34px, 8cqw, 48px);
+  background: rgba(255, 255, 255, 0.22);
 }
 
+.aviator-brand-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0px;
+}
+
+.aviator-mini-plane {
+  width: clamp(38px, 8cqw, 48px);
+  height: auto;
+  object-fit: contain;
+  margin-left: 4px;
+}
+
+.aviator-script-name {
+  font-family: 'Brush Script MT', 'Dancing Script', 'Lucida Handwriting', cursive, sans-serif;
+  font-size: clamp(24px, 6cqw, 34px);
+  font-style: italic;
+  color: #e5133a;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+}
+
+.partner-subtitle {
+  font-size: clamp(11px, 2.5cqw, 14px);
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+/* Thin red progress bar on gray background */
 .aviator-start-bar {
-  width: min(64%, 260px);
-  height: 6px;
-  margin-top: var(--space-2);
+  width: min(75%, 320px);
+  height: 4px;
+  margin: 12px 0 14px 0;
   overflow: hidden;
-  border-radius: var(--r-pill);
-  background: var(--surface-3);
+  border-radius: 999px;
+  background: #333333;
 }
 
 .aviator-start-bar-fill {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  background: var(--brand);
+  background: #e5133a;
   transform-origin: left center;
   transform: scaleX(var(--from, 1));
   animation-name: aviator-drain;
@@ -407,28 +431,68 @@
   }
 }
 
-.aviator-start-count {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--t3);
-  font-variant-numeric: tabular-nums;
-}
-
-.aviator-start-count strong {
-  color: var(--brand-hi);
-  font-weight: 700;
-}
-
-.aviator-start-badge {
-  display: inline-flex;
+/* ═══ SPRIBE OFFICIAL GAME BADGE ═══ */
+.spribe-official-badge {
+  background: linear-gradient(180deg, #1f2a15 0%, #151d0e 100%);
+  border: 1px solid #4a632c;
+  border-radius: 14px;
+  padding: 10px 18px 8px 18px;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  margin-top: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--r-sm);
-  border: var(--border-hairline);
-  background: var(--surface);
+  gap: 5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.spribe-header-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spribe-icon-dots {
+  color: #a4c776;
+  font-size: 14px;
+}
+
+.spribe-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Arial Black', sans-serif;
+  font-size: clamp(15px, 3.6cqw, 18px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+}
+
+.official-game-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 11px;
+  font-weight: 600;
+  color: #c4d7b2;
+}
+
+.official-game-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #0b1a08;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.since-year-text {
+  font-size: 10px;
+  color: #8fa874;
+  font-weight: 600;
 }
 
 .aviator-start-badge-main {
@@ -459,17 +523,26 @@
 
 /* ═══ MULTIPLIER + WATCHERS ═══ */
 .aviator-multiplier {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: var(--z-raised);
-  font-family: var(--font-display);
-  font-size: 56px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(48px, 9vw, 84px);
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  color: var(--t1);
+  color: #ffffff;
+  text-shadow: 0 0 32px rgba(229, 19, 58, 0.65), 0 0 60px rgba(168, 15, 40, 0.4);
+  pointer-events: none;
+  user-select: none;
 }
 
 .aviator-multiplier.crashed {
-  color: var(--danger);
+  color: #ff334b;
+  text-shadow: 0 0 24px rgba(255, 51, 75, 0.8);
 }
 
 .aviator-watchers {

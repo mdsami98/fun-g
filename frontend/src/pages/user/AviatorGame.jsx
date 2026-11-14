@@ -8,6 +8,7 @@ import { LiveBetsFeed } from '../../components/LiveBetsFeed';
 import { FlightPlane } from '../../components/FlightPlane';
 import { Icon } from '../../components/Icon';
 import { buildFlightPath } from './flightPath';
+import planePng from '../../images/plane.png';
 import '../../styles/userTheme.css';
 import '../../styles/aviatorTheme.css';
 
@@ -114,11 +115,11 @@ export function AviatorGame() {
     [drawnMultiplier, canvasSize],
   );
 
-  /* Plane placement: tail-bottom on the tip, nose along the tangent. */
+  /* Plane placement: tail-bottom on the tip, nose pitched slightly up (~14 degrees) exactly like screenshot */
   const planeTransform = useMemo(() => {
     if (!path) return '';
     const size = Math.min(PLANE_MAX, Math.max(PLANE_MIN, canvasSize.w * PLANE_WIDTH_RATIO));
-    const tilt = Math.min(path.angle, PLANE_MAX_TILT);
+    const tilt = 14;
     return `translate(${path.tip.x.toFixed(2)} ${path.tip.y.toFixed(2)}) rotate(${(-tilt).toFixed(2)}) scale(${(size / 100).toFixed(3)})`;
   }, [path, canvasSize.w]);
 
@@ -205,17 +206,20 @@ export function AviatorGame() {
 
           {renderPhase === 'betting' && (
             <div className="aviator-start" aria-live="polite">
-              <div className="aviator-start-lockup">
-                <svg className="aviator-start-mark" viewBox="-6 -52 118 72" aria-hidden="true">
-                  <g transform="rotate(-14 50 -10)">
-                    <FlightPlane />
-                  </g>
-                </svg>
-                <span className="aviator-start-divider" aria-hidden="true" />
-                <span className="aviator-start-title">AVIATOR</span>
+              {/* UFC Aviator Official Partners Lockup */}
+              <div className="aviator-partner-lockup">
+                <div className="partner-brands-row">
+                  <span className="ufc-logo">UFC</span>
+                  <span className="partner-divider-vert" />
+                  <div className="aviator-brand-block">
+                    <img src={planePng} alt="Aviator" className="aviator-mini-plane" />
+                    <span className="aviator-script-name">Aviator</span>
+                  </div>
+                </div>
+                <div className="partner-subtitle">OFFICIAL PARTNERS</div>
               </div>
-              <div className="aviator-start-sub">PLACE YOUR BETS</div>
 
+              {/* Progress Bar (Thin red bar on gray background) */}
               <div
                 className="aviator-start-bar"
                 role="progressbar"
@@ -234,26 +238,23 @@ export function AviatorGame() {
                   />
                 )}
               </div>
-              <div className="aviator-start-count">
-                Takeoff in <strong>{countdownSeconds ?? '–'}s</strong>
-              </div>
 
-              <div className="aviator-start-badge">
-                <span className="aviator-start-badge-main">
-                  <span className="aviator-start-check" aria-hidden="true">
-                    <Icon name="check" size={12} />
-                  </span>
-                  Original game
-                </span>
-                <span className="aviator-start-badge-sub">Cash out before it flies away</span>
+              {/* SPRIBE Official Game Badge */}
+              <div className="spribe-official-badge">
+                <div className="spribe-header-row">
+                  <span className="spribe-icon-dots">⠶</span>
+                  <span className="spribe-text">SPRIBE</span>
+                </div>
+                <div className="official-game-pill">
+                  <span>Official Game</span>
+                  <span className="official-game-check">✓</span>
+                </div>
+                <div className="since-year-text">Since 2018</div>
               </div>
             </div>
           )}
 
-          {/* Flight path — area, ribbon and plane in ONE svg, drawn in pixel
-              space (no preserveAspectRatio stretch). The plane is placed from
-              the same tip + tangent as the ribbon, so it stays welded to the
-              end of the trail by construction. */}
+          {/* Flight path — area, ribbon and plane in ONE svg */}
           {path && (
             <svg
               className={`aviator-path ${renderPhase}`}
@@ -263,10 +264,36 @@ export function AviatorGame() {
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-              {/* Flat: area and line are one solid colour (--path-color in
-                  aviatorTheme.css), the area at a single fixed opacity. */}
-              <path className="aviator-path-area" d={path.areaD} />
-              <path className="aviator-path-ribbon" d={path.ribbonD} />
+              <defs>
+                <linearGradient id="aviatorAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#d11338" stopOpacity="0.75" />
+                  <stop offset="65%" stopColor="#8c0720" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#40020d" stopOpacity="0.15" />
+                </linearGradient>
+                <filter id="aviatorLineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Area filled underneath the curve */}
+              <path className="aviator-path-area" d={path.areaD} fill="url(#aviatorAreaGrad)" />
+
+              {/* Glowing red boundary line along the climbing edge */}
+              <path
+                className="aviator-path-stroke"
+                d={path.curveD}
+                fill="none"
+                stroke="#ff1a49"
+                strokeWidth="4"
+                strokeLinecap="round"
+                filter="url(#aviatorLineGlow)"
+              />
+
+              {/* Red Plane */}
               <g transform={planeTransform}>
                 <FlightPlane />
               </g>

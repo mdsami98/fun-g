@@ -10,7 +10,7 @@ import '../../styles/userTheme.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Promotion', icon: 'gift', end: true, requiresAuth: false },
   { to: '/activity', label: 'Activity', icon: 'clock-counter-clockwise', requiresAuth: true },
-  { to: '/aviator', label: 'Games', icon: 'game-controller', requiresAuth: false, center: true },
+  { to: '/games', label: 'Games', icon: 'game-controller', requiresAuth: false, center: true },
   { to: '/wallet', label: 'Wallet', icon: 'wallet', requiresAuth: true },
   { to: '/account', label: 'Account', icon: 'user', requiresAuth: true },
 ];
