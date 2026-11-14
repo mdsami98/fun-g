@@ -41,6 +41,10 @@ export class User {
   @Column('decimal', { precision: 12, scale: 2, default: 0 })
   balance: string;
 
+  @Exclude()
+  @Column({ name: 'withdrawal_password', type: 'varchar', nullable: true })
+  withdrawalPassword: string | null;
+
   @Column({ default: true })
   isActive: boolean;
 

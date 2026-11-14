@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AgenciesModule } from './agencies/agencies.module';
 import { AuthModule } from './auth/auth.module';
 import { GameModule } from './game/game.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GameModule } from './game/game.module';
     AgenciesModule,
     AuthModule,
     GameModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],

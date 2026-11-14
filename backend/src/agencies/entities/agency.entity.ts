@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { AgencyWalletNumber } from './agency-wallet-number.entity';
 
 @Entity('agencies')
 export class Agency {
@@ -30,6 +31,9 @@ export class Agency {
 
   @OneToMany(() => User, (user) => user.agency)
   users: User[];
+
+  @OneToMany(() => AgencyWalletNumber, (walletNumber) => walletNumber.agency)
+  walletNumbers: AgencyWalletNumber[];
 
   @CreateDateColumn()
   createdAt: Date;

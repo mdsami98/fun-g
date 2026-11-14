@@ -1,0 +1,135 @@
+/* ============================================================
+   DESIGN TOKENS — single source of truth for the user panel.
+   Spec: design-system/aviator/MASTER.md (ui-ux-pro-max).
+
+   STYLE: Flat Design — solid colours only. NO gradients, NO
+   elevation shadows, NO decorative blur. Hierarchy comes from
+   surface tone, 1px borders, size and weight.
+
+   RULE: no colour literal (hex / rgb / hsl / named) may appear in
+   any other user-panel stylesheet. Everything reads var(--…).
+   --*-rgb triplets are SPACE-separated: rgb(var(--brand-rgb) / .2)
+   (a translucent SOLID tint — still flat, not a gradient).
+   ============================================================ */
+
+:root {
+  /* ── Colour roles (one red scheme) ───────────────────────── */
+  /* primary — CTAs, active nav/chip, focus */
+  --brand: #e5133a;
+  --brand-rgb: 229 19 58;
+  --brand-lo: #a80f28; /* pressed / hover-darken of primary */
+  --on-brand: #ffffff; /* text on primary: 5.4:1 */
+  /* highlight — amounts, counters, emphasis words */
+  --brand-hi: #ff5c72;
+  --brand-hi-rgb: 255 92 114;
+  /* accent — HOT badges, secondary banner */
+  --accent: #ff3d7f;
+  --accent-rgb: 255 61 127;
+  --on-accent: #2b0010;
+
+  /* surfaces, darkest → lightest */
+  --bg: #1a0808;
+  --surface: #2b0f0f; /* card */
+  --surface-2: #3c1515; /* raised / input / muted */
+  --surface-3: #4d1c1c; /* hover / pressed / selected */
+  --surface-rgb: 43 15 15;
+
+  /* borders */
+  --border: #4a1f1f; /* dividers, card outlines (decorative) */
+  --border-strong: #8a3a3a; /* control boundaries: >= 3:1 on surfaces */
+
+  /* text */
+  --t1: #fff5f2; /* primary   18:1 on bg */
+  --t2: #e8bdb3; /* secondary 12.6:1 */
+  --t3: #c08f88; /* muted     >= 4.5:1 on every surface */
+
+  /* status (always paired with text/icon, never colour alone) */
+  --success: #2fe39a;
+  --success-rgb: 47 227 154;
+  --danger: #ff4d6a;
+  --danger-rgb: 255 77 106;
+  --info: #3cc8ff;
+  --info-rgb: 60 200 255;
+
+  --shadow-rgb: 10 2 0; /* warm black — scrims only */
+  --light-rgb: 255 255 255;
+
+  /* ── Derived (written once, from the roles above) ─────────── */
+  --brand-tint: rgb(var(--brand-rgb) / 0.14); /* selected/info wash */
+  --hairline: var(--border);
+  --border-hairline: 1px solid var(--border);
+  --border-brand: 1px solid var(--brand);
+  --scrim: rgb(var(--shadow-rgb) / 0.78); /* modal backdrop */
+  --focus-ring: 2px solid var(--brand-hi);
+
+  /* ── Typography (ui-ux-pro-max: "Gaming Bold") ────────────── */
+  --font-display: 'Russo One', 'Arial Black', system-ui, sans-serif;
+  --font-body: 'Chakra Petch', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 12px; /* minimum anywhere */
+  --text-sm: 14px;
+  --text-base: 16px; /* body */
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --leading: 1.5;
+  --leading-tight: 1.15;
+
+  /* ── Spacing (4/8 rhythm) ─────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* ── Shape ────────────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r: 12px;
+  --r-pill: 999px;
+
+  /* ── Touch ────────────────────────────────────────────────── */
+  --tap: 44px; /* minimum interactive size */
+
+  /* ── Motion ───────────────────────────────────────────────── */
+  --dur-fast: 150ms; /* press / hover */
+  --dur: 200ms; /* state change */
+  --dur-slow: 300ms; /* enter */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); /* arriving */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1); /* leaving */
+
+  /* ── Layers ───────────────────────────────────────────────── */
+  --z-raised: 2;
+  --z-overlay-local: 3;
+  --z-header: 90;
+  --z-nav: 100;
+  --z-modal: 1000;
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  --shell-max: 480px;
+}
+
+/* theme.css (admin panel) also declares --success on :root and loads
+   later, so it would win page-wide. Re-assert the user-panel value on the
+   shell so every user page (incl. Aviator) gets one consistent green. */
+.user-shell {
+  --success: #2fe39a;
+}
+
+/* ============================================================
+   GAME ARTWORK — the one deliberate exception to "roles only".
+   A poster is artwork, like a cover image: fixed per game, not
+   derived from --brand. FLAT: --art-a is the poster fill,
+   --art-b the darker solid band behind the meta strip.
+   Adding a palette = one line here.
+   ============================================================ */
+.g-poster[data-art='crimson'] { --art-a: #ff5468; --art-b: #a80f28; }
+.g-poster[data-art='ember']   { --art-a: #ffb423; --art-b: #c42d0a; }
+.g-poster[data-art='gold']    { --art-a: #ffd84d; --art-b: #b85500; }
+.g-poster[data-art='forest']  { --art-a: #4fcc6e; --art-b: #0c5529; }
+.g-poster[data-art='teal']    { --art-a: #38dccb; --art-b: #097582; }
+.g-poster[data-art='ocean']   { --art-a: #4ab3ff; --art-b: #0a48aa; }
+.g-poster[data-art='violet']  { --art-a: #b97dff; --art-b: #4f1db8; }
+.g-poster[data-art='magenta'] { --art-a: #ff78bb; --art-b: #b81463; }
+.g-poster[data-art='night']   { --art-a: #4c4c5c; --art-b: #111117; }

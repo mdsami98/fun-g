@@ -1,0 +1,336 @@
+/* ============================================================
+   CRASH CHART — scoped styles. Every colour is a local variable on
+   .cc-root, so the whole component recolours from one place (and can be
+   pointed at the app's design tokens later by reassigning these four).
+   ============================================================ */
+
+.cc-root {
+  --cc-accent: #ff3b30;
+  --cc-accent-hi: #ff8a3d;
+  --cc-accent-rgb: 255 59 48;
+  --cc-bg: #14122b;
+  --cc-bg-2: #1b1838;
+  --cc-muted: #8b88ad;
+
+  width: 100%;
+  container-type: inline-size;
+}
+
+.cc-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 20% 90%, var(--cc-bg-2) 0%, var(--cc-bg) 70%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ═══ GRID ═══ */
+.cc-grid line {
+  stroke: rgb(255 255 255 / 0.07);
+  stroke-width: 1;
+}
+
+.cc-grid text {
+  fill: var(--cc-muted);
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+/* ═══ CURVE ═══ */
+.cc-stop-a {
+  stop-color: var(--cc-accent);
+  stop-opacity: 0.55;
+}
+.cc-stop-b {
+  stop-color: var(--cc-accent);
+  stop-opacity: 1;
+}
+.cc-stop-c {
+  stop-color: var(--cc-accent-hi);
+  stop-opacity: 1;
+}
+
+.cc-area-top {
+  stop-color: var(--cc-accent);
+  stop-opacity: 0.28;
+}
+.cc-area-bottom {
+  stop-color: var(--cc-accent);
+  stop-opacity: 0;
+}
+
+.cc-line {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cc-arrow {
+  fill: var(--cc-accent-hi);
+}
+
+.cc-area {
+  transition: opacity 0.3s ease;
+}
+
+/* ═══ READOUT ═══ */
+.cc-readout {
+  position: absolute;
+  top: 4cqw;
+  left: 5cqw;
+  pointer-events: none;
+}
+
+.cc-multiplier {
+  font-size: 9cqw;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cc-accent);
+  text-shadow: 0 0 18px rgb(var(--cc-accent-rgb) / 0.55), 0 0 48px rgb(var(--cc-accent-rgb) / 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+.cc-crashed,
+.cc-waiting {
+  margin-top: 1.4cqw;
+  font-size: 3.1cqw;
+  font-weight: 700;
+  color: var(--cc-accent);
+  text-shadow: 0 0 14px rgb(var(--cc-accent-rgb) / 0.4);
+}
+
+.cc-waiting {
+  color: var(--cc-muted);
+  text-shadow: none;
+}
+
+/* ═══ BET FEED ═══ */
+.cc-feed {
+  position: absolute;
+  /* Sits in the column reserved by ChartBox.padRight (26% of the width).
+     If this moves, DEFAULT_BOX.padRight must move with it. */
+  top: 16%;
+  right: 2cqw;
+  max-width: 26cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.4cqw;
+  pointer-events: none;
+}
+
+.cc-feed-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.7cqw;
+  max-width: 100%;
+  padding: 1cqw 1.8cqw;
+  border-radius: 999px;
+  background: rgb(10 8 26 / 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size: 2.5cqw;
+  white-space: nowrap;
+  animation: cc-slide-in 0.4s ease backwards;
+}
+
+@keyframes cc-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cc-feed-id {
+  color: #6c9fe0;
+  font-weight: 600;
+}
+
+.cc-feed-amount {
+  color: #cfe3ff;
+  font-weight: 800;
+}
+
+.cc-feed-cur {
+  color: var(--cc-muted);
+  font-weight: 600;
+}
+
+.cc-elapsed {
+  position: absolute;
+  right: 2.5cqw;
+  bottom: 1.6cqw;
+  font-size: 2.2cqw;
+  font-weight: 600;
+  color: var(--cc-muted);
+  opacity: 0.8;
+}
+
+/* ═══ CRASHED ═══ */
+.cc-root.is-crashed .cc-line,
+.cc-root.is-crashed .cc-arrow {
+  animation: cc-crash-flash 0.45s ease;
+}
+
+.cc-root.is-crashed .cc-area {
+  opacity: 0.45;
+}
+
+@keyframes cc-crash-flash {
+  0% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-feed-row,
+  .cc-root.is-crashed .cc-line,
+  .cc-root.is-crashed .cc-arrow {
+    animation: none;
+  }
+}
+
+/* ═══ START / WAITING SCREEN ═══
+   Mirrors the pre-round screen: black sunburst backdrop, centred brand
+   lockup, and a bar that drains over the wait window. */
+.cc-start {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+  animation: cc-start-in 0.3s ease;
+}
+
+@keyframes cc-start-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Sunburst. repeating-conic-gradient gives hard-edged wedges radiating
+   from a point; the mask fades them out toward the centre so the lockup
+   stays readable. */
+.cc-start-rays {
+  position: absolute;
+  inset: -30%;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 62%,
+    #0f0f0f 0deg 7deg,
+    #000 7deg 15deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 62%, transparent 0%, #000 42%);
+  mask-image: radial-gradient(circle at 50% 62%, transparent 0%, #000 42%);
+  animation: cc-rays-spin 90s linear infinite;
+}
+
+@keyframes cc-rays-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cc-start-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2cqw;
+  padding: 0 6cqw;
+  text-align: center;
+}
+
+.cc-start-lockup {
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+}
+
+.cc-start-mark {
+  width: 11cqw;
+  height: auto;
+  fill: var(--cc-accent);
+  filter: drop-shadow(0 0 12px rgb(var(--cc-accent-rgb) / 0.5));
+}
+
+.cc-start-title {
+  font-size: 9cqw;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  color: var(--cc-accent);
+  text-shadow: 0 0 22px rgb(var(--cc-accent-rgb) / 0.45);
+}
+
+.cc-start-sub {
+  font-size: 3.2cqw;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #fff;
+}
+
+/* The bar: drained portion stays visible as a dark track, matching the
+   reference where the remainder reads as grey. */
+.cc-start-bar {
+  width: 44cqw;
+  height: 1.5cqw;
+  min-height: 6px;
+  border-radius: 999px;
+  background: #33363f;
+  overflow: hidden;
+  margin-top: 0.6cqw;
+}
+
+.cc-start-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cc-accent), var(--cc-accent-hi));
+  box-shadow: 0 0 12px rgb(var(--cc-accent-rgb) / 0.55);
+  /* Width is set per frame from rAF — no CSS transition, or the bar would
+     lag the clock and finish after the round has already started. */
+}
+
+.cc-start-count {
+  font-size: 2.6cqw;
+  font-weight: 700;
+  color: #8b88ad;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-start,
+  .cc-start-rays {
+    animation: none;
+  }
+}

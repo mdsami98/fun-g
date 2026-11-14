@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api, ApiError } from '../../api/client';
+import { Icon } from '../../components/Icon';
 
 const PAGE_SIZE = 20;
 
@@ -85,16 +86,27 @@ export function Activity() {
     <div>
       <h1 className="u-page-title">Activity</h1>
 
-      {error && <div className="u-list-error">{error}</div>}
+      {error && (
+        <div className="u-list-error" role="alert">
+          <Icon name="warning-circle" size={18} />
+          <span>{error}</span>
+        </div>
+      )}
 
       {isLoading ? (
-        <div className="u-card u-empty-state">Loading…</div>
+        <div className="u-card u-empty-state" role="status">
+          Loading your activity…
+        </div>
       ) : items.length === 0 ? (
         <div className="u-card u-empty-state">
-          <div className="u-empty-state-icon">🧾</div>
-          No activity yet.
-          <br />
-          <Link to="/aviator">Play Aviator</Link> to see your history here.
+          <div className="u-empty-state-icon">
+            <Icon name="receipt" size={36} />
+          </div>
+          <div className="u-empty-state-title">No activity yet</div>
+          Your bets and wins will show up here.
+          <Link className="u-text-link" to="/aviator">
+            Play Aviator
+          </Link>
         </div>
       ) : (
         <>

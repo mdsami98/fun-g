@@ -3,12 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter } from 'events';
-import * as crypto from 'crypto';
 import { GameRound } from './entities/game-round.entity';
 import { GameBet } from './entities/game-bet.entity';
 import { GameRoundStatus } from './enums/game-round-status.enum';
 import { GameBetStatus } from './enums/game-bet-status.enum';
 import { GameConfig, getGameConfig } from './config/game.config';
+import { CrashSeedService } from './crash-seed.service';
 
 export interface CurrentRoundState {
   id: string;
@@ -38,12 +38,14 @@ export class GameEngineService extends EventEmitter implements OnApplicationBoot
     configService: ConfigService,
     @InjectRepository(GameRound) private readonly roundRepo: Repository<GameRound>,
     @InjectRepository(GameBet) private readonly betRepo: Repository<GameBet>,
+    private readonly crashSeeds: CrashSeedService,
   ) {
     super();
     this.config = getGameConfig(configService);
   }
 
   async onApplicationBootstrap() {
+    await this.crashSeeds.ensureSeeded(this.config.houseEdge, this.config.maxMultiplier);
     await this.startBettingPhase();
   }
 
@@ -73,20 +75,28 @@ export class GameEngineService extends EventEmitter implements OnApplicationBoot
     return Math.pow(this.config.growthBase, elapsedMs);
   }
 
-  private generateCrashPoint(): { crashPoint: number; randomSeed: string } {
-    const r = crypto.randomInt(0, 1_000_000) / 1_000_000;
-    let crashPoint: number;
-    if (r < this.config.houseEdge) {
-      crashPoint = 1.0;
-    } else {
-      crashPoint = Math.floor((100 * (1 - this.config.houseEdge)) / (1 - r)) / 100;
-    }
-    crashPoint = Math.min(Math.max(crashPoint, 1.0), this.config.maxMultiplier);
-    return { crashPoint, randomSeed: r.toFixed(6) };
+  /**
+   * Next crash point from the aviator_crash_point table.
+   * randomSeed records which row it came from.
+   */
+  private async nextCrashPoint(): Promise<{
+    crashPoint: number;
+    randomSeed: string;
+  }> {
+    const { seedId, crashPoint } = await this.crashSeeds.pickNext();
+    // Clamp in case a row was edited by hand to something outside the game's limits.
+    const clamped = Math.min(
+      Math.max(crashPoint, 1.0),
+      this.config.maxMultiplier,
+    );
+    return {
+      crashPoint: clamped,
+      randomSeed: `aviator_crash_point:${seedId}`,
+    };
   }
 
   private async startBettingPhase() {
-    const { crashPoint, randomSeed } = this.generateCrashPoint();
+    const { crashPoint, randomSeed } = await this.nextCrashPoint();
     const now = new Date();
 
     const saved = await this.roundRepo.save(

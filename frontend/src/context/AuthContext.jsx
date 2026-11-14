@@ -63,6 +63,17 @@ export function AuthProvider({ children }) {
     setAuth(null);
   };
 
+  const refreshUser = async () => {
+    if (!auth?.accessToken) return null;
+    try {
+      const user = await api.me(auth.accessToken);
+      setAuth((prev) => (prev ? { ...prev, user } : prev));
+      return user;
+    } catch {
+      return null;
+    }
+  };
+
   const value = useMemo(
     () => ({
       user: auth?.user ?? null,
@@ -72,6 +83,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      refreshUser,
     }),
     [auth, isLoading],
   );

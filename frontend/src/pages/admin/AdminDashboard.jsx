@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api, ApiError } from '../../api/client';
 
@@ -165,6 +166,7 @@ export function AdminDashboard() {
                   <th>bKash</th>
                   <th>Charge / 1000</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,6 +180,36 @@ export function AdminDashboard() {
                       <span className={`status-pill ${agency.isActive ? 'active' : 'inactive'}`}>
                         {agency.isActive ? 'Active' : 'Inactive'}
                       </span>
+                    </td>
+                    <td style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <Link
+                        to={`/agency/users?agencyId=${agency.id}`}
+                        className="btn-secondary"
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: 12,
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                        }}
+                      >
+                        👥 View Players
+                      </Link>
+                      <Link
+                        to={`/agency/settings?agencyId=${agency.id}`}
+                        className="btn-secondary"
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: 12,
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                        }}
+                      >
+                        ⚙️ Wallet Settings
+                      </Link>
                     </td>
                   </tr>
                 ))}

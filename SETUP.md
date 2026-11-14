@@ -139,9 +139,10 @@ When running the backend **outside Docker** (`npm run start:dev`),
 
 ## 8. Seeding
 
-There is no automatic seeding — the database starts empty (just the schema).
-You need to create the initial Super Admin manually, once, after migrations
-have run.
+The only automatic seeding is the Aviator crash-score pool (see
+[Aviator crash scores](#aviator-crash-scores) below). Everything else starts
+empty, so you need to create the initial Super Admin manually, once, after
+migrations have run.
 
 ### Seed the Super Admin
 
@@ -194,6 +195,34 @@ curl -s -X POST http://localhost:1001/agencies \
 
 This creates the `agencies` row **and** its `agency_admin` user in one call.
 Global users can then self-register at `/register` using `agencyCode: DHAKA01`.
+
+### Aviator crash scores
+
+Aviator does not generate crash points at runtime. Each round takes its crash
+point from the `aviator_crash_point` table (1000 rows: `crashScore`, `nextPick`):
+
+1. The row with `nextPick = true` is used for the round that is starting.
+2. If no row is flagged, a random row is used instead.
+3. The used row's flag is cleared and a different random row is flagged for
+   the round after.
+
+The round's `randomSeed` column records which row it used (`aviator_crash_point:<id>`).
+
+The backend fills `aviator_crash_point` automatically on startup if the table is
+empty, using `GAME_HOUSE_EDGE` and `GAME_MAX_MULTIPLIER`. The values are
+deterministic and built so that no fixed cash-out target returns players more
+than `1 - GAME_HOUSE_EDGE`. To regenerate them (for example after changing
+`GAME_HOUSE_EDGE`):
+
+```bash
+cd backend
+npm run seed:crash-seeds -- --reset
+```
+
+Without `--reset` the script does nothing if the table already has rows.
+Editing `crashScore` values by hand changes the house edge. Anyone who can
+read this table knows the next round's crash point, so keep database access
+restricted.
 
 ## 9. Database Migrations (TypeORM)
 
