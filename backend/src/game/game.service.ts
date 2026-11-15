@@ -10,6 +10,7 @@ import Decimal from 'decimal.js';
 import { GameEngineService } from './game-engine.service';
 import { GameRound } from './entities/game-round.entity';
 import { GameBet } from './entities/game-bet.entity';
+import { CrashSeed } from './entities/crash-seed.entity';
 import { GameRoundStatus } from './enums/game-round-status.enum';
 import { GameBetStatus } from './enums/game-bet-status.enum';
 import { User } from '../users/entities/user.entity';
@@ -123,9 +124,8 @@ export class GameService {
       return { ok: false, reason: 'ROUND_NOT_RUNNING' };
     }
 
-    const growthBase = this.engine.getConfig().growthBase;
     const elapsed = Date.now() - round.startedAt;
-    const multiplier = Math.pow(growthBase, elapsed);
+    const multiplier = this.engine.multiplierAt(elapsed);
     if (multiplier >= round.crashPoint) {
       return { ok: false, reason: 'TOO_LATE_ALREADY_CRASHED' };
     }
@@ -151,7 +151,7 @@ export class GameService {
           currentRoundNow?.startedAt !== null && currentRoundNow?.startedAt !== undefined
             ? Date.now() - currentRoundNow.startedAt
             : Infinity;
-        const multiplierNow = Math.pow(growthBase, elapsedNow);
+        const multiplierNow = this.engine.multiplierAt(elapsedNow);
         if (
           !currentRoundNow ||
           currentRoundNow.id !== roundIdAtEntry ||
@@ -268,4 +268,36 @@ export class GameService {
     });
     return { items, total, page, limit };
   }
+
+  async getAdminPrediction() {
+    const round = this.engine.getCurrentRoundState();
+    const liveMultiplier = this.engine.getLiveMultiplier().toFixed(2);
+
+    // Look up pre-flagged next pick from aviator_crash_point
+    const nextSeed = await this.dataSource.getRepository(CrashSeed).findOne({
+      where: { nextPick: true },
+    });
+
+    const nextQueuedCrashPoint = nextSeed ? Number(nextSeed.crashScore).toFixed(2) : null;
+    const phase = round?.phase ?? GameRoundStatus.CRASHED;
+
+    // If current round is BETTING or RUNNING, its crashPoint is already established.
+    // If current round is CRASHED, the next round's crashPoint will be nextQueuedCrashPoint.
+    const targetCrashPoint =
+      round && (round.phase === GameRoundStatus.BETTING || round.phase === GameRoundStatus.RUNNING)
+        ? round.crashPoint.toFixed(2)
+        : nextQueuedCrashPoint;
+
+    return {
+      roundId: round?.id ?? null,
+      phase,
+      currentCrashPoint: round?.crashPoint ? round.crashPoint.toFixed(2) : null,
+      targetCrashPoint,
+      nextQueuedCrashPoint,
+      liveMultiplier,
+      history: this.engine.getHistory().slice(0, 10),
+      timestamp: new Date().toISOString(),
+    };
+  }
 }
+

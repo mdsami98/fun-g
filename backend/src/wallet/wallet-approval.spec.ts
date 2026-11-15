@@ -38,6 +38,7 @@ describe('WalletService - Approval & History', () => {
     agencyId: 'agency-uuid-1',
     agency: null,
     balance: '250.00',
+    withdrawalPassword: null,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),

@@ -65,10 +65,38 @@ export function AviatorGame() {
     return { remaining, total, from: total ? remaining / total : 0 };
   }, [game.phase, game.bettingClosesAt]);
 
+  const [smoothMultiplier, setSmoothMultiplier] = useState('1.00');
+
+  useEffect(() => {
+    if (game.phase !== 'running' || !game.startedAt) {
+      if (game.phase === 'crashed') {
+        setSmoothMultiplier(game.crashPoint ?? game.multiplier ?? '1.00');
+      } else if (game.phase === 'betting') {
+        setSmoothMultiplier('1.00');
+      }
+      return undefined;
+    }
+
+    let animId;
+    const startMs = new Date(game.startedAt).getTime();
+
+    const update = () => {
+      const elapsed = Math.max(0, Date.now() - startMs);
+      const t = elapsed / 1000;
+      // Calm, smooth acceleration - relaxed pacing
+      const calc = 1.0 + 0.05 * t + 0.022 * t * t;
+      setSmoothMultiplier(calc.toFixed(2));
+      animId = requestAnimationFrame(update);
+    };
+
+    animId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animId);
+  }, [game.phase, game.startedAt, game.crashPoint, game.multiplier]);
+
   const potentialPayout = useMemo(() => {
     if (!game.myBet || game.myBet.status !== 'pending') return null;
-    return (Number(game.myBet.amount) * Number(game.multiplier)).toFixed(2);
-  }, [game.myBet, game.multiplier]);
+    return (Number(game.myBet.amount) * Number(smoothMultiplier)).toFixed(2);
+  }, [game.myBet, smoothMultiplier]);
 
   /* The canvas viewBox is stretched non-uniformly (preserveAspectRatio
      "none"), so an angle computed in path units would not match what the
@@ -105,8 +133,9 @@ export function AviatorGame() {
   const drawnMultiplier = useMemo(() => {
     if (simMultiplier !== null) return simMultiplier;
     if (game.phase === 'betting' || !game.phase) return 1;
-    return game.phase === 'crashed' ? game.crashPoint : game.multiplier;
-  }, [simMultiplier, game.phase, game.multiplier, game.crashPoint]);
+    if (game.phase === 'crashed') return Number(game.crashPoint ?? game.multiplier);
+    return Number(smoothMultiplier);
+  }, [simMultiplier, game.phase, game.multiplier, game.crashPoint, smoothMultiplier]);
 
   /* Ribbon + arrowhead, built in pixel space from the measured canvas so
      the taper stays true and the arrow always rides the tangent. */
@@ -302,7 +331,7 @@ export function AviatorGame() {
 
           {renderPhase !== 'betting' && (
             <div className={`aviator-multiplier ${game.phase === 'crashed' ? 'crashed' : ''}`}>
-              {game.phase === 'crashed' ? game.crashPoint : game.multiplier}x
+              {game.phase === 'crashed' ? game.crashPoint : smoothMultiplier}x
             </div>
           )}
           <div className="aviator-watchers">
