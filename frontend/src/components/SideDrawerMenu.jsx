@@ -1,0 +1,167 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Icon } from './Icon';
+
+export function SideDrawerMenu({ isOpen, onClose }) {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKey = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const goTo = (path) => {
+    onClose();
+    navigate(path);
+  };
+
+  return (
+    <div className="drawer-overlay" onClick={onClose}>
+      <aside
+        className="drawer-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation Menu"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Drawer Header */}
+        <div className="drawer-header">
+          <div className="drawer-user-info">
+            <div className="drawer-avatar">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div>
+              <div className="drawer-username">
+                {isAuthenticated ? user?.name || user?.phone : 'গেস্ট প্লেয়ার'}
+              </div>
+              <div className="drawer-user-phone">
+                {isAuthenticated ? user?.phone : 'লগইন করুন সম্পূর্ণ সুবিধার জন্য'}
+              </div>
+            </div>
+          </div>
+          <button type="button" className="drawer-close-btn" onClick={onClose} aria-label="Close menu">
+            ✕
+          </button>
+        </div>
+
+        {/* Balance Card */}
+        {isAuthenticated ? (
+          <div className="drawer-balance-card">
+            <div className="drawer-balance-label">মোট ব্যালেন্স:</div>
+            <div className="drawer-balance-amount">৳ {user?.balance || '0.00'}</div>
+            <div className="drawer-balance-actions">
+              <button
+                type="button"
+                className="drawer-action-btn deposit"
+                onClick={() => goTo('/wallet')}
+              >
+                💼 ডিপোজিট
+              </button>
+              <button
+                type="button"
+                className="drawer-action-btn withdraw"
+                onClick={() => goTo('/wallet')}
+              >
+                🏧 উত্তোলন
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="drawer-auth-buttons">
+            <button
+              type="button"
+              className="drawer-login-btn"
+              onClick={() => goTo('/login')}
+            >
+              লগ ইন
+            </button>
+            <button
+              type="button"
+              className="drawer-register-btn"
+              onClick={() => goTo('/register')}
+            >
+              রেজিস্ট্রেশন
+            </button>
+          </div>
+        )}
+
+        {/* Menu Navigation Links */}
+        <nav className="drawer-nav-list">
+          <button type="button" className="drawer-nav-item" onClick={() => goTo('/')}>
+            <span className="drawer-nav-icon"><Icon name="house" weight="fill" size={20} /></span>
+            <span>হোম (Home)</span>
+          </button>
+
+          <button type="button" className="drawer-nav-item" onClick={() => goTo('/games')}>
+            <span className="drawer-nav-icon"><Icon name="game-controller" weight="fill" size={20} /></span>
+            <span>সকল গেম (All Games)</span>
+          </button>
+
+          <button type="button" className="drawer-nav-item highlight" onClick={() => goTo('/aviator')}>
+            <span className="drawer-nav-icon"><Icon name="airplane-tilt" weight="fill" size={20} /></span>
+            <span>Aviator ক্র্যাশ গেম</span>
+            <span className="drawer-badge hot">HOT</span>
+          </button>
+
+          <button type="button" className="drawer-nav-item" onClick={() => goTo('/wallet')}>
+            <span className="drawer-nav-icon"><Icon name="wallet" weight="fill" size={20} /></span>
+            <span>ওয়ালেট ও ট্রানজেকশন</span>
+          </button>
+
+          <button type="button" className="drawer-nav-item" onClick={() => goTo('/activity')}>
+            <span className="drawer-nav-icon"><Icon name="clock-counter-clockwise" weight="fill" size={20} /></span>
+            <span>বেট হিস্ট্রি ও অ্যাক্টিভিটি</span>
+          </button>
+
+          <div className="drawer-divider" />
+
+          <button
+            type="button"
+            className="drawer-nav-item"
+            onClick={() => {
+              onClose();
+              alert('ভিআইপি ক্লাব প্রোগ্রাম খুব শীঘ্রই চালু হচ্ছে!');
+            }}
+          >
+            <span className="drawer-nav-icon"><Icon name="trophy" weight="fill" size={20} /></span>
+            <span>ভিআইপি ক্লাব</span>
+          </button>
+
+          <button
+            type="button"
+            className="drawer-nav-item"
+            onClick={() => {
+              onClose();
+              alert('লাইভ কাস্টমার সাপোর্ট ২৪/৭ সক্রিয় রয়েছে!');
+            }}
+          >
+            <span className="drawer-nav-icon"><Icon name="broadcast" weight="fill" size={20} /></span>
+            <span>কাস্টমার সাপোর্ট</span>
+          </button>
+
+          {isAuthenticated && (
+            <button
+              type="button"
+              className="drawer-nav-item logout"
+              onClick={() => {
+                logout();
+                onClose();
+              }}
+            >
+              <span className="drawer-nav-icon">🚪</span>
+              <span>লগ আউট (Log out)</span>
+            </button>
+          )}
+        </nav>
+      </aside>
+    </div>
+  );
+}

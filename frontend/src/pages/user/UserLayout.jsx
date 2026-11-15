@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AuthPromptModal } from '../../components/AuthPromptModal';
+import { AppDownloadHeader } from '../../components/AppDownloadHeader';
+import { SideDrawerMenu } from '../../components/SideDrawerMenu';
 import { Icon } from '../../components/Icon';
 import '../../styles/userTheme.css';
 
@@ -35,6 +37,7 @@ function NavContent({ item }) {
 export function UserLayout() {
   const { isAuthenticated, user } = useAuth();
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="user-shell">
@@ -43,15 +46,44 @@ export function UserLayout() {
       </a>
 
       <div className="user-shell-inner">
+        {/* Top App Download Notice */}
+        <AppDownloadHeader />
+
+        {/* Main Header matching CkasH reference */}
         <header className="u-app-header">
-          <Link to="/" className="u-app-logo" aria-label="Aviator — home">
-            <Icon name="game-controller" weight="fill" size={26} />
-            <span className="u-app-logo-text">AVIATOR</span>
-          </Link>
+          <div className="header-left-cluster">
+            <button
+              type="button"
+              className="header-drawer-toggle"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="Open navigation menu"
+            >
+              <span className="hamburger-line" />
+              <span className="hamburger-line" />
+              <span className="hamburger-line" />
+            </button>
+
+            <Link to="/" className="u-app-logo" aria-label="CkasH — home">
+              <span className="logo-crown">👑</span>
+              <span className="logo-brand-text">
+                <span className="brand-c">C</span>kas<span className="brand-h">H</span>
+              </span>
+            </Link>
+          </div>
+
           {isAuthenticated ? (
-            <div className="u-header-balance">
-              <Icon name="coins" weight="fill" size={20} />
-              <span className="u-visually-hidden">Balance </span>৳{user.balance}
+            <div className="header-right-cluster">
+              <Link to="/wallet" className="u-header-balance-pill">
+                <span className="balance-symbol">৳</span>
+                <span className="balance-digits">
+                  {user?.balance ? parseFloat(user.balance).toLocaleString() : '0'}
+                </span>
+              </Link>
+              <Link to="/account" className="u-header-avatar" aria-label="User account">
+                <span className="avatar-initial">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </span>
+              </Link>
             </div>
           ) : (
             <div className="u-header-actions">
@@ -97,6 +129,7 @@ export function UserLayout() {
       </div>
 
       <AuthPromptModal open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
+      <SideDrawerMenu isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   );
 }
