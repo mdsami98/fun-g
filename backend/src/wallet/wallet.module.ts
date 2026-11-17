@@ -9,6 +9,7 @@ import { UserRestriction } from '../users/entities/user-restriction.entity';
 import { UserWithdrawalAccount } from './entities/user-withdrawal-account.entity';
 import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { WalletController } from './wallet.controller';
       UserRestriction,
       UserWithdrawalAccount,
     ]),
+    NotificationsModule,
   ],
   providers: [WalletService],
   controllers: [WalletController],

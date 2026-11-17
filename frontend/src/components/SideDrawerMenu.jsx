@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Icon } from './Icon';
 
-export function SideDrawerMenu({ isOpen, onClose }) {
+export function SideDrawerMenu({ isOpen, onClose, onOpenSpin, onOpenSupport, onOpenPromo }) {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -121,6 +121,12 @@ export function SideDrawerMenu({ isOpen, onClose }) {
             <span>বেট হিস্ট্রি ও অ্যাক্টিভিটি</span>
           </button>
 
+          <button type="button" className="drawer-nav-item" onClick={() => goTo('/referrals')}>
+            <span className="drawer-nav-icon"><Icon name="gift" weight="fill" size={20} /></span>
+            <span>রেফার ও আয় (Refer & Earn)</span>
+            <span className="drawer-badge" style={{ background: '#10b981', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>৳ বোনাস</span>
+          </button>
+
           <div className="drawer-divider" />
 
           <button
@@ -128,11 +134,22 @@ export function SideDrawerMenu({ isOpen, onClose }) {
             className="drawer-nav-item"
             onClick={() => {
               onClose();
-              alert('ভিআইপি ক্লাব প্রোগ্রাম খুব শীঘ্রই চালু হচ্ছে!');
+              if (onOpenSpin) onOpenSpin();
             }}
           >
+            <span className="drawer-nav-icon">🎡</span>
+            <span>দৈনিক লাকি স্পিন (Lucky Spin)</span>
+            <span className="drawer-badge" style={{ background: '#ec4899', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>ফ্রি</span>
+          </button>
+
+          <button
+            type="button"
+            className="drawer-nav-item"
+            onClick={() => goTo('/vip')}
+          >
             <span className="drawer-nav-icon"><Icon name="trophy" weight="fill" size={20} /></span>
-            <span>ভিআইপি ক্লাব</span>
+            <span>ভিআইপি ক্লাব (VIP Club)</span>
+            <span className="drawer-badge" style={{ background: '#f59e0b', color: '#090d16', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto', fontWeight: 'bold' }}>ক্যাশ বোনাস</span>
           </button>
 
           <button
@@ -140,12 +157,29 @@ export function SideDrawerMenu({ isOpen, onClose }) {
             className="drawer-nav-item"
             onClick={() => {
               onClose();
-              alert('লাইভ কাস্টমার সাপোর্ট ২৪/৭ সক্রিয় রয়েছে!');
+              if (onOpenPromo) onOpenPromo();
+            }}
+          >
+            <span className="drawer-nav-icon">🎟️</span>
+            <span>প্রোমো কোড রিডিম (Redeem)</span>
+            <span className="drawer-badge" style={{ background: '#8b5cf6', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>ভাউচার</span>
+          </button>
+
+
+
+          <button
+            type="button"
+            className="drawer-nav-item"
+            onClick={() => {
+              onClose();
+              if (onOpenSupport) onOpenSupport();
             }}
           >
             <span className="drawer-nav-icon"><Icon name="broadcast" weight="fill" size={20} /></span>
-            <span>কাস্টমার সাপোর্ট</span>
+            <span>কাস্টমার সাপোর্ট (Live Chat)</span>
+            <span className="drawer-badge" style={{ background: '#10b981', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', marginLeft: 'auto' }}>অনলাইন</span>
           </button>
+
 
           {isAuthenticated && (
             <button

@@ -49,12 +49,18 @@ export function AuthProvider({ children }) {
       throw new ApiError('This login is not available for your account type', 403);
     }
     persist(data);
+    if (data.user.role === 'user') {
+      sessionStorage.setItem('show_referral_promo_modal', 'true');
+    }
     return data.user;
   };
 
   const register = async (payload) => {
     const data = await api.register(payload);
     persist(data);
+    if (data.user.role === 'user') {
+      sessionStorage.setItem('show_referral_promo_modal', 'true');
+    }
     return data.user;
   };
 

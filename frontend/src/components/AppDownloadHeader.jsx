@@ -3,8 +3,9 @@ import { Icon } from './Icon';
 
 export function AppDownloadHeader() {
   const [dismissed, setDismissed] = useState(false);
+  const isInsideNativeApp = typeof window !== 'undefined' && Boolean(window.ReactNativeWebView);
 
-  if (dismissed) return null;
+  if (dismissed || isInsideNativeApp) return null;
 
   return (
     <div className="app-download-topbar">
@@ -22,11 +23,15 @@ export function AppDownloadHeader() {
 
       <div className="app-download-right">
         <a
-          href="#download"
+          href="/ckash-gaming.apk"
+          download="ckash-gaming.apk"
           className="app-download-btn"
           onClick={(e) => {
-            e.preventDefault();
-            alert('অফিশিয়াল অ্যাপ শীঘ্রই ডাউনলোডযোগ্য হবে!');
+            // If static APK is hosted, it downloads; otherwise notifies
+            if (!e.currentTarget.getAttribute('href')?.endsWith('.apk')) {
+              e.preventDefault();
+              alert('অফিশিয়াল অ্যান্ড্রয়েড অ্যাপ ডাউনলোড প্রস্তুত হচ্ছে!');
+            }
           }}
         >
           ডাউনলোড করুন

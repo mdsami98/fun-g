@@ -39,6 +39,14 @@ export const api = {
   me: (token) => request('/auth/me', { token }),
   listAgencies: (token) => request('/agencies', { token }),
   createAgency: (token, payload) => request('/agencies', { method: 'POST', body: payload, token }),
+  toggleAgencyStatus: (token, agencyId, isActive) =>
+    request(`/agencies/${agencyId}/status`, {
+      method: 'PATCH',
+      body: { isActive },
+      token,
+    }),
+  getSuperAdminMoneyFlow: (token, params = {}) =>
+    request(`/agencies/analytics/money-flow?${new URLSearchParams(params)}`, { token }),
   getRoundHistory: (params = {}) =>
     request(`/game/rounds?${new URLSearchParams(params)}`),
   getMyBetHistory: (token, params = {}) =>
@@ -102,7 +110,87 @@ export const api = {
       body: { amount },
       token,
     }),
+  getMyReferrals: (token) =>
+    request('/referrals/me', { token }),
+  regenerateReferralCode: (token) =>
+    request('/referrals/regenerate', { method: 'POST', token }),
+  validateReferralCode: (code) =>
+    request(`/referrals/validate/${code}`),
+  getAgencyUserReferralConfig: (token, agencyId, userId) =>
+    request(`/agencies/${agencyId}/referrals/users/${userId}`, { token }),
+  updateAgencyUserReferralConfig: (token, agencyId, userId, payload) =>
+    request(`/agencies/${agencyId}/referrals/users/${userId}`, {
+      method: 'PUT',
+      body: payload,
+      token,
+    }),
+  getAgencyReferralHistory: (token, agencyId, params = {}) =>
+    request(`/agencies/${agencyId}/referrals/history?${new URLSearchParams(params)}`, { token }),
+  getAgencyDefaultReferralConfig: (token, agencyId) =>
+    request(`/agencies/${agencyId}/referrals/default-config`, { token }),
+  updateAgencyDefaultReferralConfig: (token, agencyId, payload) =>
+    request(`/agencies/${agencyId}/referrals/default-config`, {
+      method: 'PUT',
+      body: payload,
+      token,
+    }),
+  getMyNotifications: (token, limit = 30) =>
+    request(`/notifications/me?limit=${limit}`, { token }),
+  markNotificationRead: (token, id) =>
+    request(`/notifications/${id}/read`, { method: 'PATCH', token }),
+  markAllNotificationsRead: (token) =>
+    request('/notifications/mark-all-read', { method: 'POST', token }),
+  getDailySpinStatus: (token) =>
+    request('/daily-spin/status', { token }),
+  executeDailySpin: (token) =>
+    request('/daily-spin/spin', { method: 'POST', token }),
+  getVipStatus: (token) =>
+    request('/vip/me', { token }),
+  claimVipReward: (token, level) =>
+    request(`/vip/claim/${level}`, { method: 'POST', token }),
+  getMyChatThread: (token) =>
+    request('/chat/my-thread', { token }),
+  getChatMessages: (token, threadId, limit = 50, offset = 0) =>
+    request(`/chat/threads/${threadId}/messages?limit=${limit}&offset=${offset}`, { token }),
+  sendChatMessage: (token, threadId, text) =>
+    request(`/chat/threads/${threadId}/messages`, {
+      method: 'POST',
+      body: { text },
+      token,
+    }),
+  markChatThreadRead: (token, threadId) =>
+    request(`/chat/threads/${threadId}/read`, { method: 'PATCH', token }),
+  getAgencyChatThreads: (token) =>
+    request('/chat/agency/threads', { token }),
+  redeemPromoCode: (token, code) =>
+    request('/promo-codes/redeem', {
+      method: 'POST',
+      body: { code },
+      token,
+    }),
+  getAgencyPromoCodes: (token) =>
+    request('/promo-codes/agency', { token }),
+  createAgencyPromoCode: (token, payload) =>
+    request('/promo-codes/agency', {
+      method: 'POST',
+      body: payload,
+      token,
+    }),
+  toggleAgencyPromoCode: (token, id, isActive) =>
+    request(`/promo-codes/agency/${id}/status`, {
+      method: 'PATCH',
+      body: { isActive },
+      token,
+    }),
+  deleteAgencyPromoCode: (token, id) =>
+    request(`/promo-codes/agency/${id}`, {
+      method: 'DELETE',
+      token,
+    }),
 };
+
+
+
 
 
 

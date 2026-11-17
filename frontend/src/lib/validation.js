@@ -12,13 +12,14 @@ export function validateLogin({ phone, password }) {
   return errors;
 }
 
-export function validateRegister({ name, phone, agencyCode, password, confirmPassword }) {
+export function validateRegister({ name, phone, agencyCode, referralCode, password, confirmPassword }) {
   const errors = {};
   if (!name.trim()) errors.name = 'Enter your full name.';
   if (!phone.trim()) errors.phone = 'Enter your phone number.';
   else if (!PHONE_PATTERN.test(phone.trim()))
     errors.phone = 'Use 10–15 digits, optionally starting with +, e.g. +8801712345678.';
-  if (!agencyCode.trim()) errors.agencyCode = 'Enter the agency code you were given.';
+  if (!agencyCode?.trim() && !referralCode?.trim())
+    errors.agencyCode = 'Enter an agency code or referral invitation code.';
   if (password.length < PASSWORD_MIN)
     errors.password = `Use at least ${PASSWORD_MIN} characters.`;
   if (!confirmPassword) errors.confirmPassword = 'Re-enter your password.';

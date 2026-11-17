@@ -13,9 +13,9 @@ export class RegisterDto {
   @MinLength(8)
   password: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  agencyCode: string;
+  agencyCode?: string;
 
   @IsOptional()
   @IsString()

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '../../components/Icon';
 
@@ -16,6 +17,29 @@ export function Settings() {
         <div className="u-profile-phone">{user.phone}</div>
         <div className="u-balance-label">Balance</div>
         <div className="u-balance-value">৳{user.balance}</div>
+      </div>
+
+      <div className="u-card">
+        <Link
+          to="/referrals"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            textDecoration: 'none',
+            color: 'inherit',
+            padding: '4px 0',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>🎁</span>
+            <div>
+              <div style={{ fontWeight: 600, color: '#f1f5f9' }}>Refer & Earn</div>
+              <div style={{ fontSize: '12px', color: '#94a3b8' }}>বন্ধু রেফার করে প্রতি রেফারে ক্যাশ বোনাস জিতুন</div>
+            </div>
+          </div>
+          <span style={{ color: '#10b981', fontWeight: 600, fontSize: '13px' }}>যাব &rarr;</span>
+        </Link>
       </div>
 
       <div className="u-card">

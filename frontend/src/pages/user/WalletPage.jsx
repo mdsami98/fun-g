@@ -2,7 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api, ApiError } from '../../api/client';
 import { Icon } from '../../components/Icon';
+import { RedeemPromoModal } from '../../components/RedeemPromoModal';
 import '../../styles/wallet.css';
+
 
 const QUICK_AMOUNTS = [500, 800, 1000, 2000, 5000, 10000, 20000];
 
@@ -53,6 +55,8 @@ export function WalletPage() {
   const [isLoadingMethods, setIsLoadingMethods] = useState(true);
   const [error, setError] = useState('');
   const [successBanner, setSuccessBanner] = useState('');
+  const [showPromoModal, setShowPromoModal] = useState(false);
+
 
   // Step 1 state
   const [selectedMethodId, setSelectedMethodId] = useState(null);
@@ -382,8 +386,23 @@ export function WalletPage() {
     <div className="wallet-container">
       <h1 className="u-page-title">Wallet</h1>
 
+      {/* Promo Code Quick Redeem Banner */}
+      <div className="wallet-promo-banner" onClick={() => setShowPromoModal(true)}>
+        <div className="promo-banner-left">
+          <span className="promo-banner-icon">🎟️</span>
+          <div className="promo-banner-text">
+            <strong>প্রোমো কোড বা ভাউচার আছে?</strong>
+            <span>ক্যাশ বোনাস বা ফ্রি স্পিন পেতে ক্লিক করুন</span>
+          </div>
+        </div>
+        <button type="button" className="promo-banner-btn">
+          রিডিম
+        </button>
+      </div>
+
       {/* Tabs: Deposit, Withdraw, Requests */}
       <div className="wallet-tabs" role="tablist">
+
         <button
           type="button"
           role="tab"
@@ -1147,6 +1166,9 @@ export function WalletPage() {
           </div>
         </div>
       )}
+
+      <RedeemPromoModal isOpen={showPromoModal} onClose={() => setShowPromoModal(false)} />
     </div>
   );
 }
+

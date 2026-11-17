@@ -9,3 +9,12 @@ export function createGameSocket(token) {
     auth: token ? { token } : {},
   });
 }
+
+export function createChatSocket(token) {
+  return io(API_URL, {
+    transports: ['websocket', 'polling'],
+    autoConnect: true,
+    auth: token ? { token } : {},
+  });
+}
+

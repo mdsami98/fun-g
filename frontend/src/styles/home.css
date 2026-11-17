@@ -230,6 +230,56 @@
   color: #ffffff;
 }
 
+.header-spin-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s, background 0.2s;
+  padding: 0;
+}
+
+.header-spin-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  transform: rotate(25deg);
+}
+
+.floating-spin-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 74px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px 8px 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #090d16;
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 30px;
+  border: 2px solid #fef08a;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.45), 0 0 10px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  animation: floatSpin 3s ease-in-out infinite;
+}
+
+@keyframes floatSpin {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+
 /* ══════════════════════════════════════════════════════════════
    3. HERO PROMO BANNER SLIDER
    ══════════════════════════════════════════════════════════════ */

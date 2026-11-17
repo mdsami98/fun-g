@@ -18,6 +18,7 @@ import { Agency } from '../agencies/entities/agency.entity';
 import { User } from '../users/entities/user.entity';
 import { UserRestriction } from '../users/entities/user-restriction.entity';
 import { UserWithdrawalAccount } from './entities/user-withdrawal-account.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('WalletService', () => {
   let service: WalletService;
@@ -127,6 +128,12 @@ describe('WalletService', () => {
         {
           provide: DataSource,
           useValue: dataSource,
+        },
+        {
+          provide: NotificationsService,
+          useValue: {
+            createNotification: jest.fn().mockResolvedValue({ id: 'notif-1' }),
+          },
         },
       ],
     }).compile();

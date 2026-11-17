@@ -20,7 +20,14 @@ import { AgencyProfile } from './pages/agency/AgencyProfile';
 import { AgencySettings } from './pages/agency/AgencySettings';
 import { AgencyDeposits } from './pages/agency/AgencyDeposits';
 import { AgencyUsers } from './pages/agency/AgencyUsers';
+import { AgencySupportChat } from './pages/agency/AgencySupportChat';
+import { AgencyPromoCodes } from './pages/agency/AgencyPromoCodes';
 import { CrashChartPreview } from './pages/dev/CrashChartPreview';
+
+
+import { ReferralsPage } from './pages/user/ReferralsPage';
+import { VipClubPage } from './pages/user/VipClubPage';
+
 
 function App() {
   return (
@@ -57,6 +64,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="referrals"
+              element={
+                <ProtectedRoute roles={['user']}>
+                  <ReferralsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="vip"
+              element={
+                <ProtectedRoute roles={['user']}>
+                  <VipClubPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="settings" element={<Navigate to="/account" replace />} />
           </Route>
 
@@ -82,7 +106,11 @@ function App() {
             }
           >
             <Route index element={<AgencyDashboard />} />
+            <Route path="support" element={<AgencySupportChat />} />
+            <Route path="promo-codes" element={<AgencyPromoCodes />} />
             <Route path="users" element={<AgencyUsers />} />
+
+
             <Route path="deposits" element={<AgencyDeposits />} />
             <Route path="settings" element={<AgencySettings />} />
             <Route path="profile" element={<AgencyProfile />} />

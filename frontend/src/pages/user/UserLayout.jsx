@@ -4,8 +4,16 @@ import { useAuth } from '../../context/AuthContext';
 import { AuthPromptModal } from '../../components/AuthPromptModal';
 import { AppDownloadHeader } from '../../components/AppDownloadHeader';
 import { SideDrawerMenu } from '../../components/SideDrawerMenu';
+import { ReferralPromoModal } from '../../components/ReferralPromoModal';
+import { NotificationBell } from '../../components/NotificationBell';
+import { LuckySpinModal } from '../../components/LuckySpinModal';
+import { UserSupportChatModal } from '../../components/UserSupportChatModal';
+import { RedeemPromoModal } from '../../components/RedeemPromoModal';
 import { Icon } from '../../components/Icon';
+
+
 import '../../styles/userTheme.css';
+
 
 /* Bottom nav: 5 top-level destinations, each icon + label (fill weight).
    The `center` item renders as the solid primary pill. */
@@ -38,6 +46,11 @@ export function UserLayout() {
   const { isAuthenticated, user } = useAuth();
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [spinModalOpen, setSpinModalOpen] = useState(false);
+  const [supportChatOpen, setSupportChatOpen] = useState(false);
+  const [promoModalOpen, setPromoModalOpen] = useState(false);
+
+
 
   return (
     <div className="user-shell">
@@ -73,6 +86,16 @@ export function UserLayout() {
 
           {isAuthenticated ? (
             <div className="header-right-cluster">
+              <button
+                type="button"
+                className="header-spin-btn"
+                onClick={() => setSpinModalOpen(true)}
+                title="লাকি স্পিন হুইল"
+                aria-label="Open Lucky Spin Wheel"
+              >
+                🎡
+              </button>
+              <NotificationBell />
               <Link to="/wallet" className="u-header-balance-pill">
                 <span className="balance-symbol">৳</span>
                 <span className="balance-digits">
@@ -100,6 +123,18 @@ export function UserLayout() {
         <main className="user-content" id="main" tabIndex={-1}>
           <Outlet />
         </main>
+
+        {isAuthenticated && (
+          <button
+            type="button"
+            className="floating-spin-btn"
+            onClick={() => setSpinModalOpen(true)}
+            aria-label="Open Lucky Spin"
+          >
+            <span>🎡</span>
+            <span>লাকি স্পিন</span>
+          </button>
+        )}
 
         <nav className="u-bottom-nav" aria-label="Main">
           {NAV_ITEMS.map((item) => {
@@ -129,7 +164,20 @@ export function UserLayout() {
       </div>
 
       <AuthPromptModal open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
-      <SideDrawerMenu isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <SideDrawerMenu
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onOpenSpin={() => setSpinModalOpen(true)}
+        onOpenSupport={() => setSupportChatOpen(true)}
+        onOpenPromo={() => setPromoModalOpen(true)}
+      />
+      <ReferralPromoModal />
+      <LuckySpinModal isOpen={spinModalOpen} onClose={() => setSpinModalOpen(false)} />
+      <UserSupportChatModal isOpen={supportChatOpen} onClose={() => setSupportChatOpen(false)} />
+      <RedeemPromoModal isOpen={promoModalOpen} onClose={() => setPromoModalOpen(false)} />
     </div>
   );
 }
+
+
+

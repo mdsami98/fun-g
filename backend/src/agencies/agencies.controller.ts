@@ -62,6 +62,25 @@ export class AgenciesController {
     return this.agenciesService.findAll();
   }
 
+  @Get('analytics/money-flow')
+  @Roles(UserRole.SUPER_ADMIN)
+  getMoneyFlowAnalytics(
+    @Query('agencyId') agencyId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.agenciesService.getMoneyFlowAnalytics({ agencyId, startDate, endDate });
+  }
+
+  @Patch(':agencyId/status')
+  @Roles(UserRole.SUPER_ADMIN)
+  toggleStatus(
+    @Param('agencyId') agencyId: string,
+    @Body('isActive') isActive: boolean,
+  ) {
+    return this.agenciesService.toggleAgencyStatus(agencyId, Boolean(isActive));
+  }
+
   @Get(':agencyId/wallet-numbers')
   @Roles(UserRole.SUPER_ADMIN, UserRole.AGENCY_ADMIN)
   getWalletNumbers(

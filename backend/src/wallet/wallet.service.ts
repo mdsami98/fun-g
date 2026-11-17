@@ -25,6 +25,8 @@ import { UserWithdrawalAccount } from './entities/user-withdrawal-account.entity
 import { CreateDepositDto } from './dto/wallet.dto';
 import { SetupWithdrawalAccountDto, SubmitWithdrawalDto } from './dto/withdrawal-setup.dto';
 import { AddBalanceDto } from './dto/add-balance.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 @Injectable()
 export class WalletService {
@@ -43,6 +45,7 @@ export class WalletService {
     private readonly userRestrictionsRepository: Repository<UserRestriction>,
     @InjectRepository(UserWithdrawalAccount)
     private readonly withdrawalAccountsRepository: Repository<UserWithdrawalAccount>,
+    private readonly notificationsService: NotificationsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -202,6 +205,16 @@ export class WalletService {
       });
       await manager.save(WalletTransaction, historyRecord);
 
+      // Send in-app notification
+      await this.notificationsService.createNotification(
+        request.userId,
+        '✅ ডিপোজিট অনুমোদিত!',
+        `আপনার ৳${request.amount} ডিপোজিট সফল হয়েছে এবং ব্যালেন্সে যোগ করা হয়েছে। ট্রানজেকশন আইডি: ${request.transactionId}`,
+        NotificationType.DEPOSIT_APPROVED,
+        { amount: request.amount, transactionId: request.transactionId },
+        manager,
+      );
+
       return {
         success: true,
         request: savedRequest,
@@ -231,7 +244,18 @@ export class WalletService {
     request.reviewedById = adminId;
     request.reviewedAt = new Date();
 
-    return this.depositRequestsRepository.save(request);
+    const saved = await this.depositRequestsRepository.save(request);
+
+    // Send in-app notification
+    await this.notificationsService.createNotification(
+      request.userId,
+      '❌ ডিপোজিট বাতিল হয়েছে',
+      `আপনার ৳${request.amount} ডিপোজিট অনুরোধটি বাতিল করা হয়েছে। প্রয়োজনে আপনার এজেন্সির সাথে যোগাযোগ করুন।`,
+      NotificationType.DEPOSIT_REJECTED,
+      { amount: request.amount, transactionId: request.transactionId },
+    );
+
+    return saved;
   }
 
   async getUserWithdrawalAccounts(userId: string): Promise<UserWithdrawalAccount[]> {
