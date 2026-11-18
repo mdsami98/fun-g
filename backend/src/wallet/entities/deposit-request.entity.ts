@@ -24,7 +24,13 @@ export enum WalletRequestType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
   ADMIN_CREDIT = 'admin_credit',
+  REFERRAL_BONUS = 'referral_bonus',
+  SPIN_BONUS = 'spin_bonus',
+  VIP_REWARD = 'vip_reward',
+  PROMO_BONUS = 'promo_bonus',
 }
+
+
 
 @Entity('deposit_requests')
 export class DepositRequest {

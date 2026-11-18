@@ -18,6 +18,7 @@ import { Agency } from '../agencies/entities/agency.entity';
 import { User } from '../users/entities/user.entity';
 import { UserRestriction } from '../users/entities/user-restriction.entity';
 import { UserWithdrawalAccount } from './entities/user-withdrawal-account.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UserRole } from '../common/enums/user-role.enum';
 
 describe('WalletService - Approval & History', () => {
@@ -38,6 +39,7 @@ describe('WalletService - Approval & History', () => {
     agencyId: 'agency-uuid-1',
     agency: null,
     balance: '250.00',
+    withdrawalPassword: null,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -147,6 +149,12 @@ describe('WalletService - Approval & History', () => {
         {
           provide: DataSource,
           useValue: dataSource,
+        },
+        {
+          provide: NotificationsService,
+          useValue: {
+            createNotification: jest.fn().mockResolvedValue({ id: 'notif-1' }),
+          },
         },
       ],
     }).compile();

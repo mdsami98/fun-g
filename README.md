@@ -8,6 +8,8 @@
 
 - `backend/` — NestJS API (TypeORM + migrations, Postgres)
 - `frontend/` — React (Vite) app
+- `agency-mobile/` — React Native (Expo) Android/iOS app for Agency Admins (see [SETUP_MOBILE.md](./agency-mobile/SETUP_MOBILE.md))
+- `user-mobile/` — React Native (Expo) Android APK app for Players (see [SETUP_MOBILE.md](./user-mobile/SETUP_MOBILE.md))
 
 ## Ports
 

@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ApiError } from '../api/client';
+import { api, ApiError } from '../api/client';
 import { FormAlert, FormField } from '../components/FormField';
 import { Icon } from '../components/Icon';
 import { firstInvalid, PASSWORD_MIN, validateRegister } from '../lib/validation';
@@ -13,11 +13,14 @@ const FIELDS = ['name', 'phone', 'agencyCode', 'password', 'confirmPassword'];
 export function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialRef = (searchParams.get('ref') || searchParams.get('code') || '').trim().toUpperCase();
+
   const [values, setValues] = useState({
     name: '',
     phone: '',
     agencyCode: '',
-    referralCode: '',
+    referralCode: initialRef,
     password: '',
     confirmPassword: '',
   });
@@ -25,6 +28,9 @@ export function Register() {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [referralMeta, setReferralMeta] = useState(null);
+  const [referralError, setReferralError] = useState('');
+
   const refs = {
     name: useRef(null),
     phone: useRef(null),
@@ -32,6 +38,26 @@ export function Register() {
     password: useRef(null),
     confirmPassword: useRef(null),
   };
+
+  useEffect(() => {
+    if (!initialRef) return;
+
+    api
+      .validateReferralCode(initialRef)
+      .then((data) => {
+        setReferralMeta(data);
+        setReferralError('');
+        setValues((prev) => ({
+          ...prev,
+          agencyCode: data.agencyCode || prev.agencyCode,
+          referralCode: initialRef,
+        }));
+      })
+      .catch((err) => {
+        setReferralMeta(null);
+        setReferralError(err.message || 'Invalid or expired referral link');
+      });
+  }, [initialRef]);
 
   const errors = validateRegister(values);
   const errorFor = (field) => (touched[field] || submitted ? errors[field] : undefined);
@@ -87,6 +113,50 @@ export function Register() {
 
             <div className="u-auth-content">
               <FormAlert>{serverError}</FormAlert>
+
+              {referralMeta && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                    border: '1px solid #22c55e',
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    marginBottom: 16,
+                    color: '#4ade80',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <Icon name="check-circle" size={18} />
+                  <span>
+                    Referred by a friend! Auto-linked to <strong>{referralMeta.agencyName}</strong>
+                  </span>
+                </div>
+              )}
+
+              {referralError && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                    border: '1px solid #ef4444',
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    marginBottom: 16,
+                    color: '#f87171',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <Icon name="warning" size={18} />
+                  <span>{referralError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} noValidate>
                 <FormField

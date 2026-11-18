@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api, ApiError } from '../../api/client';
 import { UserRestrictionsModal } from './UserRestrictionsModal';
 import { AddBalanceModal } from './AddBalanceModal';
+import { UserReferralModal } from './UserReferralModal';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -26,6 +27,7 @@ export function AgencyUsers() {
   const [menuPosition, setMenuPosition] = useState(null);
   const [restrictionUser, setRestrictionUser] = useState(null);
   const [balanceUser, setBalanceUser] = useState(null);
+  const [referralUser, setReferralUser] = useState(null);
   const menuRef = useRef(null);
   const canAddBalance = user?.role === 'super_admin' || user?.role === 'agency_admin';
 
@@ -308,6 +310,16 @@ export function AgencyUsers() {
                             >
                               🚫 Set Restriction
                             </button>
+                            <button
+                              type="button"
+                              className="row-menu-item"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setReferralUser(u);
+                              }}
+                            >
+                              🎁 Referral Settings
+                            </button>
                             {canAddBalance && (
                               <button
                                 type="button"
@@ -338,6 +350,16 @@ export function AgencyUsers() {
           agencyId={agencyId}
           accessToken={accessToken}
           onClose={() => setRestrictionUser(null)}
+        />
+      )}
+
+      {referralUser && (
+        <UserReferralModal
+          userId={referralUser.id}
+          agencyId={agencyId}
+          token={accessToken}
+          onClose={() => setReferralUser(null)}
+          onUpdated={loadUsers}
         />
       )}
 

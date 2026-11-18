@@ -29,6 +29,21 @@ export class Agency {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ name: 'default_referral_mode', default: 'lifetime' })
+  defaultReferralMode: string;
+
+  @Column({ name: 'default_max_referrals', type: 'int', default: 5 })
+  defaultMaxReferrals: number;
+
+  @Column({ name: 'default_reset_window_hours', type: 'int', default: 24 })
+  defaultResetWindowHours: number;
+
+  @Column('decimal', { name: 'default_referral_bonus', precision: 10, scale: 2, default: 10.0 })
+  defaultReferralBonus: string;
+
+  @Column({ name: 'is_referral_enabled', default: true })
+  isReferralEnabled: boolean;
+
   @OneToMany(() => User, (user) => user.agency)
   users: User[];
 

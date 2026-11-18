@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 12.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_WEB_URL": "http://10.0.2.2:1002"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_WEB_URL": "https://your-production-domain.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

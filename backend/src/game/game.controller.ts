@@ -24,4 +24,11 @@ export class GameController {
   getMyBets(@CurrentUser() user: AuthenticatedUser, @Query() query: RoundHistoryQueryDto) {
     return this.gameService.getMyBetHistory(user.userId, query);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('prediction')
+  getPrediction() {
+    return this.gameService.getAdminPrediction();
+  }
 }
+

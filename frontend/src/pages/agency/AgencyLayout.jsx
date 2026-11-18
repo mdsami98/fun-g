@@ -3,11 +3,15 @@ import { useAuth } from '../../context/AuthContext';
 
 const NAV_ITEMS = [
   { to: '/agency', label: 'Dashboard', icon: '📊', end: true },
+  { to: '/agency/support', label: 'Support Chat', icon: '💬' },
+  { to: '/agency/promo-codes', label: 'Promo Codes', icon: '🎟️' },
   { to: '/agency/users', label: 'Users', icon: '👥' },
   { to: '/agency/deposits', label: 'Deposits', icon: '📥' },
   { to: '/agency/settings', label: 'Settings', icon: '⚙️' },
   { to: '/agency/profile', label: 'Profile', icon: '👤' },
 ];
+
+
 
 export function AgencyLayout() {
   const { user, logout } = useAuth();

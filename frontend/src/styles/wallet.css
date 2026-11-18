@@ -1304,4 +1304,60 @@
   }
 }
 
+.wallet-promo-banner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(139, 92, 246, 0.12));
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.wallet-promo-banner:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  transform: translateY(-1px);
+}
+
+.promo-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.promo-banner-icon {
+  font-size: 24px;
+}
+
+.promo-banner-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-banner-text strong {
+  font-size: 13px;
+  color: #fef08a;
+}
+
+.promo-banner-text span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.promo-banner-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 8px;
+  color: #090d16;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+
 

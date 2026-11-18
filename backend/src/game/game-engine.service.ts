@@ -71,9 +71,15 @@ export class GameEngineService extends EventEmitter implements OnApplicationBoot
     return Math.min(this.multiplierAt(elapsed), round.crashPoint);
   }
 
-  private multiplierAt(elapsedMs: number): number {
-    return Math.pow(this.config.growthBase, elapsedMs);
+  multiplierAt(elapsedMs: number): number {
+    if (elapsedMs <= 0) return 1.0;
+    const t = elapsedMs / 1000;
+    // Calm, smooth acceleration - relaxed pacing
+    const val = 1.0 + 0.05 * t + 0.022 * t * t;
+    return Math.min(val, this.config.maxMultiplier);
   }
+
+
 
   /**
    * Next crash point from the aviator_crash_point table.

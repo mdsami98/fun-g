@@ -9,6 +9,14 @@ import { AgenciesModule } from './agencies/agencies.module';
 import { AuthModule } from './auth/auth.module';
 import { GameModule } from './game/game.module';
 import { WalletModule } from './wallet/wallet.module';
+import { ReferralsModule } from './referrals/referrals.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { DailySpinModule } from './daily-spin/daily-spin.module';
+import { VipModule } from './vip/vip.module';
+import { ChatModule } from './chat/chat.module';
+import { PromoCodesModule } from './promo-codes/promo-codes.module';
+
+
 
 @Module({
   imports: [
@@ -37,7 +45,15 @@ import { WalletModule } from './wallet/wallet.module';
     AuthModule,
     GameModule,
     WalletModule,
+    ReferralsModule,
+    NotificationsModule,
+    DailySpinModule,
+    VipModule,
+    ChatModule,
+    PromoCodesModule,
   ],
+
+
   controllers: [AppController],
   providers: [AppService],
 })

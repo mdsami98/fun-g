@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api, ApiError } from '../../api/client';
+import { AgencyReferralSettingsCard } from './AgencyReferralSettingsCard';
 
 const PROVIDERS = [
   { value: 'bkash', label: 'bKash', badgeClass: 'badge-bkash' },
@@ -370,6 +371,8 @@ export function AgencySettings() {
           </div>
         )}
       </div>
+
+      {agencyId && <AgencyReferralSettingsCard agencyId={agencyId} token={accessToken} />}
     </div>
   );
 }
